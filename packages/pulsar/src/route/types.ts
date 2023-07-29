@@ -118,36 +118,16 @@ export interface Route<
 export type AnyRoute = Route<any, any, any, object, unknown>;
 export type AnyRouteContext = RouteContext<any, any, any, any>;
 
-export type inferRouteInput<TRoute extends AnyRoute> = TRoute extends Route<
-	infer _,
-	infer __,
-	infer ___,
-	infer TBody,
-	infer ____
->
-	? TBody
-	: never;
+export type inferRouteInput<TRoute extends AnyRoute> =
+	inferRouteContext<TRoute>['body'];
 
 export type inferRouteOutput<TRoute extends AnyRoute> = ReturnType<
 	TRoute['handler']
 >;
 
-export type inferRouteContext<TRoute extends AnyRoute> = TRoute extends Route<
-	infer TPath,
-	infer _,
-	infer TQuery,
-	infer TBody,
-	infer __
->
-	? RouteContext<TPath, TQuery, TBody, any>
-	: never;
+export type inferRouteContext<TRoute extends AnyRoute> = Parameters<
+	TRoute['handler']
+>[0];
 
-export type inferRouteQuery<TRoute extends AnyRoute> = TRoute extends Route<
-	infer _,
-	infer _,
-	infer TQuery,
-	infer _,
-	infer __
->
-	? TQuery
-	: never;
+export type inferRouteQuery<TRoute extends AnyRoute> =
+	inferRouteContext<TRoute>['query'];

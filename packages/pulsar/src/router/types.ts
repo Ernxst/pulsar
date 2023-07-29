@@ -9,14 +9,12 @@ export type BodySchema = Record<string, ZodType>;
 export type EmptyRoutes = Record<Path, never>;
 
 export type ExtractRoutes<TRouter extends AnyRouter> =
+	// This conditional may be a performance bottleneck ...
 	TRouter['_']['routes'] extends EmptyRoutes & infer Routes ? Routes : never;
 
 type MultiRoutes = Record<HttpMethod, AnyRoute>;
 
-export type RouteTree<TRouter extends AnyRouter = AnyRouter> = Record<
-	Path,
-	MultiRoutes | ExtractRoutes<TRouter>
->;
+export type RouteTree = Record<Path, MultiRoutes>;
 
 export type Router<
 	TGroup extends Path = '',
@@ -30,7 +28,7 @@ export type Router<
 		 * group path as the route path. The query and body parameters
 		 * will be parsed, but not validated.
 		 */
-		<TOut>(
+		<const TOut>(
 			handler: (
 				context: RouteContext<TGroup, {}, {}, TContext>
 			) => Promisable<TOut>
@@ -94,7 +92,7 @@ export type Router<
 		 * Define a route handler with a path. The request body and query parameters
 		 * will be parsed, but not validated.
 		 */
-		<const TPath extends Path, TOut>(
+		<const TPath extends Path, const TOut>(
 			path: TPath,
 			handler: (
 				context: RouteContext<`${TGroup}${TPath}`, {}, {}, TContext>
@@ -215,6 +213,12 @@ export type Router<
 			TSubgroup extends Path,
 			TSubRoutes extends RouteTree,
 			TSubContext extends object,
+			TRouter extends Router<
+				`${TGroup}${TSubgroup}`,
+				TSubRoutes,
+				TSubContext,
+				TErrShape
+			>,
 		>(
 			path: TSubgroup,
 			builder: (
@@ -224,16 +228,8 @@ export type Router<
 					TContext,
 					TErrShape
 				>
-			) => Router<`${TGroup}${TSubgroup}`, TSubRoutes, TSubContext, TErrShape>
-		): Router<
-			TGroup,
-			TRoutes &
-				ExtractRoutes<
-					Router<`${TGroup}${TSubgroup}`, TSubRoutes, TSubContext, TErrShape>
-				>,
-			TContext,
-			TErrShape
-		>;
+			) => TRouter
+		): Router<TGroup, TRoutes & ExtractRoutes<TRouter>, TContext, TErrShape>;
 	};
 };
 
