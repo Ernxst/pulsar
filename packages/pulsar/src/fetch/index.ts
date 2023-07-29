@@ -6,7 +6,9 @@ import { createHeaders, createURL } from './utils';
 
 export interface CreateFetchOptions {
 	/**
-	 * The base URL of the API
+	 * The base URL of the API - this will be prepended to all paths.
+	 *
+	 * @example 'https://api.example.com'
 	 */
 	url: string;
 	/**
