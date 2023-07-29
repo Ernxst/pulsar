@@ -32,23 +32,10 @@ type AddParam<
 	? {}
 	: { [K in TKey]?: TParams };
 
-type GetRoute<
+export interface Fetch<
 	TRouter extends AnyRouter,
-	TPath extends keyof inferRoutes<TRouter>,
-	TMethod extends HttpMethod & keyof inferRoutes<TRouter>[TPath],
-> = TMethod extends keyof inferRoutes<TRouter>[TPath]
-	? inferRoutes<TRouter>[TPath][TMethod] extends Route<
-			any,
-			TMethod,
-			any,
-			any,
-			any
-	  >
-		? inferRoutes<TRouter>[TPath][TMethod]
-		: never
-	: never;
-
-export interface Fetch<TRouter extends AnyRouter> {
+	TAllRoutes extends inferRoutes<TRouter> = inferRoutes<TRouter>,
+> {
 	/**
 	 * Make a type-safe request to the given API endpoint.
 	 *
@@ -70,11 +57,10 @@ export interface Fetch<TRouter extends AnyRouter> {
 	 * Note that this will not affect the return type of the function, which will
 	 * always be inferred from the route definition.
 	 */
-	<
-		TPath extends keyof inferRoutes<TRouter>,
-		TMethod extends HttpMethod & keyof inferRoutes<TRouter>[TPath],
-	>(
+	<TPath extends keyof TAllRoutes, TMethod extends keyof TAllRoutes[TPath]>(
 		path: TPath,
-		init: FetchOptions<TMethod, GetRoute<TRouter, TPath, TMethod>>
-	): Promise<inferRouteOutput<GetRoute<TRouter, TPath, TMethod>>>;
+		// @ts-expect-error it's fine
+		init: FetchOptions<TMethod, TAllRoutes[TPath][TMethod]>
+		// @ts-expect-error it's fine
+	): inferRouteOutput<TAllRoutes[TPath][TMethod]>;
 }

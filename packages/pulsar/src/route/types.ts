@@ -128,15 +128,9 @@ export type inferRouteInput<TRoute extends AnyRoute> = TRoute extends Route<
 	? TBody
 	: never;
 
-export type inferRouteOutput<TRoute extends AnyRoute> = TRoute extends Route<
-	infer _,
-	infer __,
-	infer ___,
-	infer ____,
-	infer TOut
->
-	? TOut
-	: never;
+export type inferRouteOutput<TRoute extends AnyRoute> = ReturnType<
+	TRoute['handler']
+>;
 
 export type inferRouteContext<TRoute extends AnyRoute> = TRoute extends Route<
 	infer TPath,

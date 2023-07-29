@@ -22,11 +22,7 @@ export type Promisable<T> = T | Promise<T>;
  */
 export type Path = `/${string}` | '';
 
-type Simplify<TObj extends object> = {
-	[K in keyof TObj]: TObj[K];
-} & {};
-
-export type inferRoutes<TRouter extends AnyRouter> = Simplify<{
+export type inferRoutes<TRouter extends AnyRouter> = {
 	[K in keyof ExtractRoutes<TRouter>]: ExtractRoutes<TRouter>[K] extends Router<
 		infer _,
 		infer __,
@@ -34,8 +30,8 @@ export type inferRoutes<TRouter extends AnyRouter> = Simplify<{
 		infer ____
 	>
 		? inferRoutes<ExtractRoutes<TRouter>[K]>
-		: Simplify<ExtractRoutes<TRouter>[K]>;
-}>;
+		: ExtractRoutes<TRouter>[K];
+};
 
 export type inferRouterContext<TRouter extends AnyRouter> =
 	TRouter['_']['context'];
