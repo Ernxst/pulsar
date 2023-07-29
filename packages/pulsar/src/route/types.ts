@@ -147,3 +147,13 @@ export type inferRouteContext<TRoute extends AnyRoute> = TRoute extends Route<
 >
 	? RouteContext<TPath, TQuery, TBody, any>
 	: never;
+
+export type inferRouteQuery<TRoute extends AnyRoute> = TRoute extends Route<
+	infer _,
+	infer _,
+	infer TQuery,
+	infer _,
+	infer __
+>
+	? TQuery
+	: never;

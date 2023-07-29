@@ -19,6 +19,7 @@ export type {
 	inferRouteInput,
 	inferRouteOutput,
 	inferRouteContext,
+	inferRouteQuery,
 } from './route/types';
 
 export type {
