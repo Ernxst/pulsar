@@ -22,6 +22,7 @@ export type {
 } from './route/types';
 
 export type {
+	RouteTree,
 	Router,
 	AnyRouter,
 	QuerySchema,

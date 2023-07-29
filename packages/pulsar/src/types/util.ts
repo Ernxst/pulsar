@@ -1,4 +1,4 @@
-import type { AnyRouter, EmptyRoutes } from '../router/types';
+import type { AnyRouter, ExtractRoutes, Router } from '../router/types';
 
 /**
  * The platform the router is running on
@@ -22,11 +22,20 @@ export type Promisable<T> = T | Promise<T>;
  */
 export type Path = `/${string}` | '';
 
-/**
- * TODO: This needs to build a Record<string, { path: string, method: HttpMethod, ...etc }>
- */
-export type inferRoutes<TRouter extends AnyRouter> =
-	TRouter['_']['routes'] extends EmptyRoutes & infer Routes ? Routes : never;
+type Simplify<TObj extends object> = {
+	[K in keyof TObj]: TObj[K];
+} & {};
+
+export type inferRoutes<TRouter extends AnyRouter> = Simplify<{
+	[K in keyof ExtractRoutes<TRouter>]: ExtractRoutes<TRouter>[K] extends Router<
+		infer _,
+		infer __,
+		infer ___,
+		infer ____
+	>
+		? inferRoutes<ExtractRoutes<TRouter>[K]>
+		: Simplify<ExtractRoutes<TRouter>[K]>;
+}>;
 
 export type inferRouterContext<TRouter extends AnyRouter> =
 	TRouter['_']['context'];

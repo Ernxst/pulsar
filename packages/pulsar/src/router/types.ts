@@ -8,9 +8,19 @@ export type QuerySchema = Record<string, ZodType>;
 export type BodySchema = Record<string, ZodType>;
 export type EmptyRoutes = Record<Path, never>;
 
+export type ExtractRoutes<TRouter extends AnyRouter> =
+	TRouter['_']['routes'] extends EmptyRoutes & infer Routes ? Routes : never;
+
+type MultiRoutes = Record<HttpMethod, AnyRoute>;
+
+export type RouteTree<TRouter extends AnyRouter = AnyRouter> = Record<
+	Path,
+	MultiRoutes | ExtractRoutes<TRouter>
+>;
+
 export type Router<
 	TGroup extends Path = '',
-	TRoutes extends Record<Path, AnyRoute | Router<any, any>> = EmptyRoutes,
+	TRoutes extends RouteTree = EmptyRoutes,
 	TContext extends object = {},
 	TErrShape extends object = {},
 > = {
@@ -27,7 +37,9 @@ export type Router<
 		): Router<
 			TGroup,
 			TRoutes & {
-				[K in TGroup]: Route<K, TMethod, {}, {}, TOut>;
+				[K in TGroup]: {
+					[M in TMethod]: Route<K, TMethod, {}, {}, TOut>;
+				};
 			},
 			TContext,
 			TErrShape
@@ -64,13 +76,15 @@ export type Router<
 		): Router<
 			TGroup,
 			TRoutes & {
-				[TFullPath in TGroup]: Route<
-					TFullPath,
-					TMethod,
-					z.infer<ZodObject<TQuery>>,
-					z.infer<ZodObject<TBody>>,
-					TOut
-				>;
+				[TFullPath in TGroup]: {
+					[K in TMethod]: Route<
+						TFullPath,
+						TMethod,
+						z.infer<ZodObject<TQuery>>,
+						z.infer<ZodObject<TBody>>,
+						TOut
+					>;
+				};
 			},
 			TContext,
 			TErrShape
@@ -88,7 +102,9 @@ export type Router<
 		): Router<
 			TGroup,
 			TRoutes & {
-				[K in `${TGroup}${TPath}`]: Route<K, TMethod, {}, {}, TOut>;
+				[K in `${TGroup}${TPath}`]: {
+					[M in TMethod]: Route<K, TMethod, {}, {}, TOut>;
+				};
 			},
 			TContext,
 			TErrShape
@@ -126,13 +142,15 @@ export type Router<
 		): Router<
 			TGroup,
 			TRoutes & {
-				[TFullPath in `${TGroup}${TPath}`]: Route<
-					TFullPath,
-					TMethod,
-					z.infer<ZodObject<TQuery>>,
-					z.infer<ZodObject<TBody>>,
-					TOut
-				>;
+				[TFullPath in `${TGroup}${TPath}`]: {
+					[K in TMethod]: Route<
+						TFullPath,
+						TMethod,
+						z.infer<ZodObject<TQuery>>,
+						z.infer<ZodObject<TBody>>,
+						TOut
+					>;
+				};
 			},
 			TContext,
 			TErrShape
@@ -184,7 +202,7 @@ export type Router<
 		/**
 		 * Add the routes from the given router to this router group.
 		 */
-		<TNewRoutes extends Record<Path, AnyRoute | AnyRouter>>(
+		<TNewRoutes extends RouteTree>(
 			builder: (router: Router) => Router<Path, TNewRoutes, any>
 		): Router<TGroup, TRoutes & TNewRoutes, TContext, TErrShape>;
 	};
@@ -195,28 +213,24 @@ export type Router<
 		 */
 		<
 			TSubgroup extends Path,
-			TSubRoutes extends Record<Path, AnyRoute | AnyRouter>,
+			TSubRoutes extends RouteTree,
 			TSubContext extends object,
 		>(
 			path: TSubgroup,
 			builder: (
 				router: Router<
 					`${TGroup}${TSubgroup}`,
-					Record<Path, never>,
+					EmptyRoutes,
 					TContext,
 					TErrShape
 				>
 			) => Router<`${TGroup}${TSubgroup}`, TSubRoutes, TSubContext, TErrShape>
 		): Router<
 			TGroup,
-			TRoutes & {
-				[K in `${TGroup}${TSubgroup}`]: Router<
-					`${TGroup}${TSubgroup}`,
-					TSubRoutes,
-					TSubContext,
-					TErrShape
-				>;
-			},
+			TRoutes &
+				ExtractRoutes<
+					Router<`${TGroup}${TSubgroup}`, TSubRoutes, TSubContext, TErrShape>
+				>,
 			TContext,
 			TErrShape
 		>;
