@@ -124,8 +124,8 @@ export type AnyRouteContext = RouteContext<any, any, any, any>;
 export type inferRouteInput<TRoute extends AnyRoute> =
 	inferRouteContext<TRoute>['body'];
 
-export type inferRouteOutput<TRoute extends AnyRoute> = ReturnType<
-	TRoute['handler']
+export type inferRouteOutput<TRoute extends AnyRoute> = Promise<
+	Awaited<ReturnType<TRoute['handler']>>
 >;
 
 export type inferRouteContext<TRoute extends AnyRoute> = Parameters<
