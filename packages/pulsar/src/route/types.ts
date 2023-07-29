@@ -117,3 +117,33 @@ export interface Route<
 
 export type AnyRoute = Route<any, any, any, object, unknown>;
 export type AnyRouteContext = RouteContext<any, any, any, any>;
+
+export type inferRouteInput<TRoute extends AnyRoute> = TRoute extends Route<
+	infer _,
+	infer __,
+	infer ___,
+	infer TBody,
+	infer ____
+>
+	? TBody
+	: never;
+
+export type inferRouteOutput<TRoute extends AnyRoute> = TRoute extends Route<
+	infer _,
+	infer __,
+	infer ___,
+	infer ____,
+	infer TOut
+>
+	? TOut
+	: never;
+
+export type inferRouteContext<TRoute extends AnyRoute> = TRoute extends Route<
+	infer TPath,
+	infer _,
+	infer TQuery,
+	infer TBody,
+	infer __
+>
+	? RouteContext<TPath, TQuery, TBody, any>
+	: never;

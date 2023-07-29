@@ -16,6 +16,9 @@ export type {
 	RedirectStatus,
 	AnyRoute,
 	AnyRouteContext,
+	inferRouteInput,
+	inferRouteOutput,
+	inferRouteContext,
 } from './route/types';
 
 export type {
