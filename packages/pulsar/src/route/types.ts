@@ -1,4 +1,5 @@
 import type { cacheHeader } from 'pretty-cache-header';
+import type { Writable } from 'type-fest';
 import type {
 	HttpMethod,
 	Path,
@@ -112,7 +113,9 @@ export interface Route<
 > {
 	path: TPath;
 	method: TMethod;
-	handler(context: RouteContext<TPath, TQuery, TBody, any>): Promisable<TOut>;
+	handler(
+		context: RouteContext<TPath, TQuery, TBody, any>
+	): Promisable<Writable<TOut>>;
 }
 
 export type AnyRoute = Route<any, any, any, object, unknown>;
