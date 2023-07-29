@@ -1,0 +1,32 @@
+module.exports = {
+	extends: ['@antfu', 'turbo'],
+	rules: {
+		curly: 'off',
+		'n/prefer-global/process': ['error', 'always'],
+		'no-only-tests/no-only-tests': 'off',
+		'unused-imports/no-unused-vars': 'off',
+		'no-tabs': 'off',
+		'antfu/if-newline': 'off',
+		'unicorn/prefer-node-protocol': 'off',
+		'no-console': 'off',
+		'arrow-parens': 'off',
+		'operator-linebreak': 'off',
+		'quote-props': 'off',
+		'@typescript-eslint/ban-types': 'off',
+		'@typescript-eslint/brace-style': 'off',
+		'@typescript-eslint/semi': 'off',
+		'@typescript-eslint/quotes': 'off',
+		'@typescript-eslint/indent': 'off',
+		'@typescript-eslint/comma-dangle': 'off',
+		'@typescript-eslint/member-delimiter-style': 'off',
+		'@typescript-eslint/no-unused-vars': [
+			'error',
+			{
+				argsIgnorePattern: '^_',
+				varsIgnorePattern: '^_',
+				ignoreRestSiblings: true,
+				caughtErrorsIgnorePattern: '^_',
+			},
+		],
+	},
+};

@@ -1,0 +1,35 @@
+{
+	"compilerOptions": {
+		// enable latest features
+		"lib": ["esnext"],
+		"module": "esnext",
+		"target": "esnext",
+		// TS 5.X
+		"moduleResolution": "bundler",
+		"moduleDetection": "force",
+		"jsx": "react-jsx", // support JSX
+		"allowJs": true, // allow importing `.js` from `.ts`
+		"esModuleInterop": true, // allow default imports for CommonJS modules
+		// best practices
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true,
+
+		"checkJs": true,
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"allowUnreachableCode": false,
+		"allowUnusedLabels": false,
+		"declaration": true,
+		"declarationMap": true,
+		"noImplicitReturns": false,
+		"strictNullChecks": true,
+		"noImplicitAny": true,
+		"allowSyntheticDefaultImports": true,
+		"verbatimModuleSyntax": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": false,
+		"noUnusedParameters": false,
+		"noUnusedLocals": false
+	}
+}

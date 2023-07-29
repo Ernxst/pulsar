@@ -1,0 +1,44 @@
+name: 📥 Install dependencies
+description: 'Setup node, install pnpm and dependencies'
+
+inputs:
+  node-version:
+    description: Node.js version
+    required: false
+    default: '18.3'
+  pnpm-version:
+    description: pnpm version
+    required: false
+    default: 8.2.0
+
+runs:
+  using: composite
+  steps:
+    - name: 💿 Cache pnpm modules
+      id: module-cache
+      uses: actions/cache@v3
+      with:
+        path: node_modules/.cache
+        key: ${{ github.job }}-${{ github.ref_name }}-${{ github.sha }}
+        restore-keys: |
+          ${{ github.job }}-${{ github.ref_name }}-
+
+    - name: 🛠 Install pnpm
+      uses: pnpm/action-setup@v2.2.1
+      with:
+        version: ${{ inputs.pnpm-version }}
+
+    - name: 📂 Set pnpm cache directory
+      run: pnpm config set store-dir node_modules/.cache
+      shell: bash
+
+    - name: ⎔ Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: ${{ 'pnpm' }}
+        cache-dependency-path: pnpm-lock.yaml
+
+    - name: 📥 Install dependencies
+      shell: bash
+      run: pnpm install

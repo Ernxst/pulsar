@@ -1,0 +1,7 @@
+name = "pulsar-dev"
+main = "src/index.ts"
+compatibility_date = "2022-12-19"
+
+[[rules]]
+type = "ESModule"
+globs = ["**/*.js"]

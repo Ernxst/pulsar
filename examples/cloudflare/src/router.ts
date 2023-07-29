@@ -1,0 +1,37 @@
+import type { inferErrorShape, inferRouterContext } from 'pulsar';
+import { Pulsar } from 'pulsar';
+import { sentry } from 'pulsar/sentry';
+import users from './routes/users';
+
+export const appRouter = new Pulsar()
+	// Built-in middleware
+	.use(sentry({ dsn: '<SENTRY_DSN>' }))
+	// Custom middleware, injects a version and platform into the route context
+	.use(() => ({ version: 'v1', platform: 'workerd' }))
+	// Merge routes into the router
+	.route(users)
+	// Error handler, including 404
+	.onError(({ status, locals, ...ctx }) => {
+		if (ctx.code === 'NOT_FOUND') {
+			status(404);
+			return { detail: `Not found: ${ctx.path.pathname}`, code: ctx.code };
+		}
+
+		if (ctx.code === 'VALIDATION') {
+			status(400);
+			return { detail: ctx.error.message, errors: [ctx.error], code: ctx.code };
+		}
+
+		status(500);
+		locals.sentry.captureException(ctx.error);
+
+		return {
+			detail: 'Something went wrong',
+			error: ctx.error,
+			code: ctx.code,
+		};
+	});
+
+export type AppRouter = typeof appRouter;
+export type Context = inferRouterContext<AppRouter>;
+export type ErrorShape = inferErrorShape<AppRouter>;

@@ -1,0 +1,226 @@
+import type { ZodObject, ZodType, z } from 'zod';
+import type { ErrorHandler } from '../errors/types';
+import type { Middleware } from '../middleware/types';
+import type { AnyRoute, Route, RouteContext } from '../route/types';
+import type { HttpMethod, Path, Promisable } from '../types/util';
+
+export type QuerySchema = Record<string, ZodType>;
+export type BodySchema = Record<string, ZodType>;
+export type EmptyRoutes = Record<Path, never>;
+
+export type Router<
+	TGroup extends Path = '',
+	TRoutes extends Record<Path, AnyRoute | Router<any, any>> = EmptyRoutes,
+	TContext extends object = {},
+	TErrShape extends object = {},
+> = {
+	[TMethod in HttpMethod as Lowercase<TMethod>]: {
+		/**
+		 * Define a route handler without a path. This uses the
+		 * group path as the route path. The query and body parameters
+		 * will be parsed, but not validated.
+		 */
+		<TOut>(
+			handler: (
+				context: RouteContext<TGroup, {}, {}, TContext>
+			) => Promisable<TOut>
+		): Router<
+			TGroup,
+			TRoutes & {
+				[K in TGroup]: Route<K, TMethod, {}, {}, TOut>;
+			},
+			TContext,
+			TErrShape
+		>;
+
+		/**
+		 * Define a route handler without a path. This uses the
+		 * group path as the route path. The query and body parameters
+		 * are validated using the provided schemas.
+		 */
+		<
+			const TOut,
+			const TQuery extends QuerySchema = {},
+			const TBody extends BodySchema = {},
+		>(
+			schemas: {
+				/**
+				 * Schema to validate query parameters
+				 */
+				query?: TQuery;
+				/**
+				 * Schema to validate request body
+				 */
+				body?: TBody;
+			},
+			handler: (
+				context: RouteContext<
+					TGroup,
+					z.infer<ZodObject<TQuery>>,
+					z.infer<ZodObject<TBody>>,
+					TContext
+				>
+			) => Promisable<TOut>
+		): Router<
+			TGroup,
+			TRoutes & {
+				[TFullPath in TGroup]: Route<
+					TFullPath,
+					TMethod,
+					z.infer<ZodObject<TQuery>>,
+					z.infer<ZodObject<TBody>>,
+					TOut
+				>;
+			},
+			TContext,
+			TErrShape
+		>;
+
+		/**
+		 * Define a route handler with a path. The request body and query parameters
+		 * will be parsed, but not validated.
+		 */
+		<const TPath extends Path, TOut>(
+			path: TPath,
+			handler: (
+				context: RouteContext<`${TGroup}${TPath}`, {}, {}, TContext>
+			) => Promisable<TOut>
+		): Router<
+			TGroup,
+			TRoutes & {
+				[K in `${TGroup}${TPath}`]: Route<K, TMethod, {}, {}, TOut>;
+			},
+			TContext,
+			TErrShape
+		>;
+
+		/**
+		 * Define a route handler with a path and schemas to validate
+		 * query parameters and request body.
+		 */
+		<
+			const TPath extends Path,
+			const TOut,
+			const TQuery extends QuerySchema = {},
+			const TBody extends BodySchema = {},
+		>(
+			path: TPath,
+			schemas: {
+				/**
+				 * Schema to validate query parameters
+				 */
+				query?: TQuery;
+				/**
+				 * Schema to validate request body
+				 */
+				body?: TBody;
+			},
+			handler: (
+				context: RouteContext<
+					`${TGroup}${TPath}`,
+					z.infer<ZodObject<TQuery>>,
+					z.infer<ZodObject<TBody>>,
+					TContext
+				>
+			) => Promisable<TOut>
+		): Router<
+			TGroup,
+			TRoutes & {
+				[TFullPath in `${TGroup}${TPath}`]: Route<
+					TFullPath,
+					TMethod,
+					z.infer<ZodObject<TQuery>>,
+					z.infer<ZodObject<TBody>>,
+					TOut
+				>;
+			},
+			TContext,
+			TErrShape
+		>;
+	};
+} & {
+	/**
+	 * The internal state of the router. Do not use. These values will not exist
+	 * at runtime.
+	 *
+	 * @internal
+	 */
+	readonly _: {
+		routes: TRoutes;
+		context: TContext;
+		errorShape: TErrShape;
+	};
+
+	/**
+	 * Specify a handler for errors thrown in routes within this router group.
+	 * This handler will be called with the error and the route context.
+	 * This is useful for standardising error responses to make them easier to
+	 * unwrap in the client.
+	 */
+	onError<const TError extends object>(
+		errorHandler: ErrorHandler<TContext, TError>
+	): Router<TGroup, TRoutes, TContext, TError>;
+
+	use: {
+		/**
+		 * Use middleware that returns a value. This value is
+		 * added to the {@linkcode RouteContext["locals"]} object
+		 * available to all routes within the router group.
+		 */
+		<const TNewContext extends object = TContext>(
+			middleware: Middleware<TContext, TNewContext>
+		): Router<TGroup, TRoutes, TContext & TNewContext, TErrShape>;
+
+		/**
+		 * Specify middleware to run on all routes that match the given path.
+		 */
+		<const TNewContext extends object = TContext>(
+			path: Path,
+			middleware: Middleware<TContext, TNewContext>
+		): Router<TGroup, TRoutes, TContext, TErrShape>;
+	};
+
+	route: {
+		/**
+		 * Add the routes from the given router to this router group.
+		 */
+		<TNewRoutes extends Record<Path, AnyRoute | AnyRouter>>(
+			builder: (router: Router) => Router<Path, TNewRoutes, any>
+		): Router<TGroup, TRoutes & TNewRoutes, TContext, TErrShape>;
+	};
+
+	group: {
+		/**
+		 * Create a new router group with the given path prefix.
+		 */
+		<
+			TSubgroup extends Path,
+			TSubRoutes extends Record<Path, AnyRoute | AnyRouter>,
+			TSubContext extends object,
+		>(
+			path: TSubgroup,
+			builder: (
+				router: Router<
+					`${TGroup}${TSubgroup}`,
+					Record<Path, never>,
+					TContext,
+					TErrShape
+				>
+			) => Router<`${TGroup}${TSubgroup}`, TSubRoutes, TSubContext, TErrShape>
+		): Router<
+			TGroup,
+			TRoutes & {
+				[K in `${TGroup}${TSubgroup}`]: Router<
+					`${TGroup}${TSubgroup}`,
+					TSubRoutes,
+					TSubContext,
+					TErrShape
+				>;
+			},
+			TContext,
+			TErrShape
+		>;
+	};
+};
+
+export type AnyRouter = Router<any, any, any, any>;

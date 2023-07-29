@@ -1,0 +1,19 @@
+{
+	"name": "@examples/cloudflare",
+	"type": "module",
+	"version": "1.0.0",
+	"private": true,
+	"scripts": {
+		"dev": "wrangler dev src/index.ts",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"pulsar": "workspace:0.0.1",
+		"zod": "3.21.4"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "4.20230717.1",
+		"typescript": "5.1.6",
+		"wrangler": "3.4.0"
+	}
+}

@@ -1,0 +1,47 @@
+{
+  "[json]": {
+    "editor.formatOnSave": false
+  },
+  "[markdown]": {
+    "editor.formatOnSave": false
+  },
+  "[javascript][typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "cSpell.words": [
+    "antfu",
+    "commitlint",
+    "linkcode",
+    "promisable",
+    "publint",
+    "tsup",
+    "typecheck"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "eslint.workingDirectories": [
+    {
+      "pattern": "packages/*/"
+    },
+    {
+      "pattern": "examples/*/"
+    },
+    {
+      "pattern": "docs/"
+    }
+  ],
+  "explorer.compactFolders": false,
+  "explorer.sortOrder": "filesFirst",
+  "files.associations": {
+    "**/*.env.*": "properties"
+  },
+  "prettier.configPath": ".prettierrc.json",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.tsdk": "./node_modules/typescript/lib",
+  "workbench.editor.labelFormat": "short",
+  "workbench.tree.indent": 20
+}
