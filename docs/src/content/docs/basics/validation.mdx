@@ -1,0 +1,64 @@
+---
+title: Validation
+description: Validation
+---
+
+Up until now, we've assumed our data is valid and of the correct shape. However, in practice,
+this is not always the case. Pulsar provides input validation via
+[`zod`](https://github.com/colinhacks/zod) for request body and query parameter validation.
+
+To provide validation schemas, pass them as the parameter before the handler function.
+You can currently pass `body` and `query` schemas and both are optional.
+
+```typescript
+import { Pulsar } from 'pulsar';
+import { z } from 'zod';
+
+const app = new Pulsar().post(
+	'/users',
+	{
+		body: {
+			username: z.string(),
+			name: z.string(),
+			email: z.string().email(),
+			age: z.number().int().positive(),
+		},
+		query: {
+			redirect_uri: z.string().url(),
+		},
+	},
+	({ query, body }) => {}
+);
+```
+
+The [`query`](/basics/context#query) and [`body`](/basics/context#body) properties of the
+[`Context`](/basics/context) object will be typed according to the validation schema.
+
+:::note
+Unlike plain `zod`, you do not need to (and should not) wrap your schema in `z.object()`.
+:::
+
+### Pathless Routes
+
+If you are using [Pathless Routes](/basics/routing#pathless-routes), you still pass the validation
+schema as the parameter before the handler function:
+
+```typescript
+import { Pulsar } from 'pulsar';
+import { z } from 'zod';
+
+const app = new Pulsar().post(
+	{
+		body: {
+			username: z.string(),
+			name: z.string(),
+			email: z.string().email(),
+			age: z.number().int().positive(),
+		},
+		query: {
+			redirect_uri: z.string().url(),
+		},
+	},
+	({ query, body }) => {}
+);
+```

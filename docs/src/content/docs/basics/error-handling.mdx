@@ -1,0 +1,69 @@
+---
+title: 'Error Handling'
+description: ''
+---
+
+Pulsar catches all the errors thrown in the handler and assigns a specific
+error code depending on the type of error.
+
+You can handle errors using a callback passed to `onError` to return custom
+responses. Each error code has a specific context type associated with it.
+
+There are three error types:
+
+- `NOT_FOUND` - thrown when no route matches the request
+- `VALIDATION` - thrown when the request body does not match the schema
+- `INTERNAL_SERVER_ERROR` - thrown when the request is not authorized
+
+An example of handling an error:
+
+```typescript
+import { Pulsar } from 'pulsar';
+
+const app = new Pulsar().onError(({ status, cache, locals, ...ctx }) => {
+	if (ctx.code === 'NOT_FOUND') {
+		cache({ maxAge: '1h' }); // Cache the response for 1 hour
+		status(404);
+		return { detail: `Not found: ${ctx.path.pathname}`, code: ctx.code };
+	}
+
+	if (ctx.code === 'VALIDATION') {
+		status(400);
+		return { detail: ctx.error.message, errors: [ctx.error], code: ctx.code };
+	}
+
+	status(500);
+	return {
+		detail: 'Something went wrong',
+		error: ctx.error,
+		code: ctx.code,
+	};
+});
+```
+
+:::note
+The error context extends the [request context](/basics/context) - your
+custom context will also be available in the error handler.
+:::
+
+## Error Shape
+
+By using the `onError` error handler, you can standardise the shape of your
+errors. This makes it easier to handle errors in your frontend.
+
+You can infer the error shape of your route to share it between your frontend and backend.
+Using the example above:
+
+```typescript
+import type { inferErrorShape } from 'pulsar';
+
+type ErrorShape = inferErrorShape<typeof app>;
+```
+
+And you can export this type and use it in your frontend. In this way, you do not need to
+manually define a global error shape and can just use what feels natural and share the inferred type.
+
+:::tip
+You should only really be sharing types between your frontend and backend and reusable,
+non-sensitive business logic. You should not be sharing your backend code
+:::

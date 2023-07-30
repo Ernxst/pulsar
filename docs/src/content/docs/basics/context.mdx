@@ -1,0 +1,319 @@
+---
+title: Context
+description: A guide in my new Starlight docs site.
+---
+
+Each route has a **context**. Informally, this is just information about the route and some
+convenience helper methods. More practically, it is the single parameter passed to your route
+handlers.
+
+In this section we'll assume the following setup:
+
+```typescript
+import { Pulsar } from 'pulsar';
+
+const app = new Pulsar();
+```
+
+## `request`
+
+The `request` property of the context is simply the Web standard
+(`Request`)[https://developer.mozilla.org/en-US/docs/Web/API/Request] object.
+
+```typescript
+app.get('/', ({ request }) => {
+	// ...
+});
+```
+
+:::note
+Unlike other web frameworks, Pulsar does not provide a custom `Request` object, nor does it
+add any properties to the `Request` object. This is because Pulsar is designed to be based
+purely on web standards.
+:::
+
+## `platform`
+
+The `platform` property of the context is a string representing the platform that the router
+is running on. Currently, the only supported platforms are:
+
+- `node`
+- `workerd` - Cloudflare Workers
+- `edge-light` - Vercel Edge functions
+- `lambda` - AWS Lambda
+
+```typescript
+app.get('/', ({ platform }) => {
+	// ...
+});
+```
+
+This may be useful if your router is running on multiple platforms and you need to do
+something different depending on the platform.
+
+## `path`
+
+The `path` property of the context is a string representing the path of the request. For
+example, if you visit `GET /users`, then the `path` will be `/users`.
+
+```typescript
+app.get('/', ({ path }) => {
+	// ...
+});
+```
+
+:::note
+The `path` property does not include the query string and will not include the
+values of any route parameters. For example, if you have a route like this:
+
+```typescript
+app.get('/users/:id', ({ path }) => {
+	// ...
+});
+```
+
+And you visit `GET /users/123`, then the `path` will be `/users/:id`.
+To access the actual URL, use the
+[`Request.prototype.url`](https://developer.mozilla.org/en-US/docs/Web/API/Request/url)
+property on the[`request`](#request) contest property.
+:::
+
+:::note
+This is a useful property if the route handler is defined separately
+from the route definition itself and/or if you have a catch-all route.
+:::
+
+## `params`
+
+The `params` property of the context is an object containing the parameters extracted from
+the route path. For example, if you have a route like this:
+
+```typescript
+app.get('/users/:id', ({ params }) => {
+	// ...
+});
+```
+
+And you visit `GET /users/123`, then the `params` object will be `{ id: '123' }`.
+
+:::note
+See [Route Parameters](/routing/path-parameters) for more information on route parameters.
+:::
+
+## `query`
+
+The `query` property of the context is an object containing the query parameters of the
+request. For example, if you visit `GET /users?name=John&age=30`,
+then the `query` object will be `{ name: 'John', age: '30' }`.
+
+```typescript
+app.get('/users', ({ query }) => {
+	// ...
+});
+```
+
+:::note
+The query parameters will be strings, even if they look like numbers.
+See the [Validation](/guides/validation) section to learn how
+to transform query parameters into other types.
+:::
+
+## `body`
+
+The `body` property of the context is the parsed
+[`Request.prototype.body`](https://developer.mozilla.org/en-US/docs/Web/API/Request/body)
+of the request.
+The body will be parsed based on the [`Content-Type`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
+header of the request according to the following rules:
+
+- `application/json` - The body will be parsed as JSON.
+- `application/x-www-form-urlencoded` - The body will be parsed as a URL-encoded string into JSON.
+- `multipart/form-data` - The body will be parsed as a `FormData` object into JSON.
+- `text/*` - The body will be parsed as a string.
+
+In all other cases the body will be parsed as a string.
+
+```typescript
+app.post('/users', ({ body }) => {
+	// ...
+});
+```
+
+:::note
+See the [Validation](/guides/validation) section to learn how
+to validate the request body has the correct shape.
+:::
+
+## `locals`
+
+The `locals` property of the context is an object that can be used to store
+data that is specific to a single request and is not shared between requests.
+For example, you may want to store the current user in the `locals` object.
+
+```typescript
+app.get('/users', ({ locals }) => {
+	locals.user; // ...
+});
+```
+
+See the [Middleware](/basics/middleware) section to learn how to use
+middleware to add data to the `locals` object.
+
+:::note
+The `locals` object is readonly - any modifications to the object will be ignored.
+:::
+
+## Convenience Methods
+
+### `redirect`
+
+The `redirect` method of the context is a convenience method for redirecting the user to
+another route. It takes two arguments:
+
+- `path` - The URL to redirect to - this can be a relative or absolute URL.
+- `status` - The status code to use for the redirect. Defaults to `302`.
+
+```typescript
+app.get('/users', ({ redirect }) => {
+	// Returns a 302 redirect to /login
+	redirect('/login');
+});
+```
+
+:::note
+The `redirect` method will set the `Location` header of the response to the `path` argument.
+:::
+
+### `status`
+
+The `status` method of the context is a convenience method for setting the status code of
+the response. It takes one argument - the status code to use.
+
+```typescript
+app.get('/users', ({ status }) => {
+	// Returns a 404 response
+	status(404);
+});
+```
+
+### `cache`
+
+The `cache` method of the context is a convenience method for setting the cache headers
+of the response. It is based on [`pretty-cache-header`](https://github.com/jjenzz/pretty-cache-header)
+which provides an intuitive and natural way to set the cache headers in
+natural language.
+
+```typescript
+app.get('/users', ({ cache }) => {
+	// Sets the cache headers to cache the response for 1 hour
+	cache({ maxAge: '1h' });
+});
+```
+
+See the [`pretty-cache-header`](https://github.com/jjenzz/pretty-cache-header/blob/bcd9b361f1b2eaa7a084f9dd2a19622e34e484be/README.md)
+documentation for more information on the options available.
+
+### `headers`
+
+The `headers` method of the context is a convenience method for both setting the response
+headers and getting the request headers.
+
+- If called with no arguments, it will return the [`Request.prototype.headers`](https://developer.mozilla.org/en-US/docs/Web/API/Request/headers)
+  property of the request.
+- If called with a single string argument, it will return the value of the header
+  with that name (if it exists) from the request.
+- If called with a single object argument, it will merge the object into the response
+  headers.
+- If called with two string arguments, it will set the header with the name of the first argument
+
+```typescript
+app.get('/users', ({ headers }) => {
+	// Returns the request headers
+	headers();
+
+	// Returns the value of the User-Agent header
+	headers('User-Agent');
+
+	// Merge the object into the response headers
+	headers({ 'Content-Type': 'application/json' });
+	headers(new Headers({ 'Content-Type': 'application/json' }));
+	headers([['Content-Type', 'application/json']]);
+
+	// Sets the Content-Type header to application/json
+	headers('Content-Type', 'application/json');
+});
+```
+
+## Response Shortcuts
+
+There are several convenience methods available on the context that
+will set the correct [`Content-Type`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
+header and return the correct response body.
+
+### `json`
+
+The `json` method of the context is a convenience method for sending a JSON response.
+It takes one argument - the JSON to send and will set the `Content-Type` header to
+`application/json`.
+
+```typescript
+app.get('/users', ({ json }) => {
+	json({ name: 'John' });
+});
+```
+
+:::tip
+If you return an object from a route handler, it will automatically be sent as JSON.
+:::
+
+### `html`
+
+The `html` method of the context is a convenience method for sending an HTML response.
+It takes one argument - the HTML to send and will set the `Content-Type` header to
+`text/html`.
+
+```typescript
+app.get('/users', ({ html }) => {
+	html('<h1>Hello World</h1>');
+});
+```
+
+### `text`
+
+The `text` method of the context is a convenience method for sending a text response.
+It takes one argument - the text to send and will set the `Content-Type` header to
+`text/plain`.
+
+```typescript
+app.get('/users', ({ text }) => {
+	text('Hello World');
+});
+```
+
+:::tip
+If you return a string from a route handler, it will automatically be sent as text.
+:::
+
+### `xml`
+
+The `xml` method of the context is a convenience method for sending an XML response.
+It takes one argument - the XML to send and will set the `Content-Type` header to
+`application/xml`.
+
+```typescript
+app.get('/users', ({ xml }) => {
+	xml('<user><name>John</name></user>');
+});
+```
+
+### `binary`
+
+The `binary` method of the context is a convenience method for sending a binary response.
+It takes one argument - the binary data to send and will set the `Content-Type` header to
+`application/octet-stream`.
+
+```typescript
+app.get('/users', ({ binary }) => {
+	binary(Buffer.from('Hello World'));
+});
+```

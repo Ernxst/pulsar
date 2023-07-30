@@ -1,0 +1,209 @@
+---
+title: Routing
+description: A guide in my new Starlight docs site.
+---
+
+**Routes** are the building blocks of your API. A route is simply a function, accessed via
+a URL path, that takes a request and returns a response. Each route is associated with a
+specific HTTP method. The supported methods are `GET`, `POST`, `PUT`, `PATCH`, `DELETE`,
+`HEAD`, `TRACE` and `OPTIONS`.
+
+If you've ever used a framework like Express, you'll be familiar with the concept of routes.
+
+In this section we'll assume the following setup:
+
+```typescript
+import { Pulsar } from 'pulsar';
+
+const app = new Pulsar();
+```
+
+For example, here's a simple route that returns a text response:
+
+```typescript
+app.get('/ping', () => 'Hello, world!');
+```
+
+Here, when make a `GET` request to `/ping`, we'll get back a JSON response with the
+message `Hello, world!`.
+
+## Chaining Routes
+
+You define multiple routes by chaining them together:
+
+```typescript
+app
+	.get('/ping', () => 'Hello, world!')
+	.post('/ping', () => 'Hello, world!')
+	.put('/ping', () => 'Hello, world!')
+	.patch('/ping', () => 'Hello, world!')
+	.delete('/ping', () => 'Hello, world!')
+	.head('/ping', () => 'Hello, world!')
+	.trace('/ping', () => 'Hello, world!')
+	.options('/ping', () => 'Hello, world!');
+```
+
+:::tip
+It is recommended to use method chaining when defining routes instead of defining them
+separately. This is because method chaining will update the type of your router variable:
+
+```typescript
+const app = new Pulsar();
+
+app
+	.get(...) // app is of type Pulsar, with no routes
+	.post(...); // app is still of type Pulsar, with no routes
+
+const router = new Pulsar()
+	.get(...) // this route is added to the type of router
+	.post(...); // this route is also added to the type of router
+```
+
+:::
+
+## Path Parameters
+
+A path parameter is a variable stored in a URL. For example, in the URL
+`/users/:id`, the `:id` part is a path parameter.
+
+You can define and use path parameters in your routes like so:
+
+```typescript
+app.get('/users/:id', ({ params }) => {
+	const id = params.id;
+	// ...
+});
+```
+
+Now, a `GET` request to `/users/123` will match the `/users/:id` route and the `id`
+parameter will be set to `123`.
+
+:::tip
+If you hover over the `params` variable, you'll see that it's typed as `{ id: string }`.
+Path parameters are inferred from the route path and will always be strings.
+You will need to convert them to the desired type yourself.
+:::
+
+You can have as many path parameters as you like:
+
+```typescript
+app.get('/users/:id/:name', ({ params }) => {
+	const { id, name } = params;
+	// ...
+});
+```
+
+And they will all be available in the `params` object.
+
+:::caution[Important]
+While it is possible to have many path parameters, it's not recommended to have more than
+one or two in sequence as it can cause clashes with other routes when matching. For example
+the endpoints `/users/:id/:name` and `/users/:id/permissions` will clash when matching
+routes.
+:::
+
+### Optional Path Parameters
+
+You can mark a path parameter as optional by adding a `?` after it:
+
+```typescript
+app.get('/users/:id/:name?', ({ params }) => {
+	const { id, name } = params;
+	// ...
+});
+```
+
+Now, a `GET` request to `/users/123` will match the `/users/:id/:name?` route and the
+`name` parameter will be set to `undefined`.
+
+A `GET` request to `/users/123/John` will also match the `/users/:id/:name?` route and the
+`name` parameter will be set to `John`.
+
+:::caution[Important]
+Again, take caution when using optional path parameters to avoid clashes with other routes.
+:::
+
+## Grouping Routes
+
+Some routes make sense to group together. For example, you might have a set of routes that
+all deal with users. Repeating the `/users` prefix for each route can be tedious, especially
+if you have many routes.
+
+You can group routes together using the `group` method:
+
+```typescript
+app.group('/users', (users) =>
+  users
+    .get('/:id', ({ params }) => {
+      const { id } = params;
+      // ...
+    })
+    .post('/', () => 'Create a user');
+});
+```
+
+Now, the `/users` prefix will be applied to all routes inside the group.
+
+:::tip
+You can use the `group` method to add a prefix to your entire router. See the
+[Base Path recipe](/recipes/base-path) for more information.
+:::
+
+### Pathless Routes
+
+Using the example above, you might want to have a `GET` route that returns a list of all users.
+Logically, path for this route would be `/users`, but we've already used that path for the group!
+
+You can create a pathless route by omitting the path argument:
+
+```typescript
+app.group('/users', (users) =>
+	users
+		.get('/:id', ({ params }) => {
+			const { id } = params;
+			// ...
+		})
+		.post('/', () => 'Create a user')
+		.get(() => 'Get all users')
+);
+```
+
+Now, `GET /users` will return a list of all users.
+
+:::tip
+Whenever you create a pathless route, it will use the path of the parent subgroup.
+:::
+
+## Merging Routers
+
+Consider the scenario where you have two routers:
+
+```typescript
+const users = new Pulsar();
+
+const posts = new Pulsar();
+```
+
+And you want to merge them together into a single router. You can do this using the `route`
+method:
+
+```typescript
+const router = new Pulsar().route(users).route(posts);
+```
+
+Now, the `router` variable will contain all the routes from both the `users` and `posts`
+routers and the typeof `router` will be updated to reflect this.
+
+### Router Prefixes
+
+If you want these routers under a prefix, you can use the `group` method instead:
+
+```typescript
+const router = new Pulsar()
+	.group('/users', () => users)
+	.group('/posts', () => posts);
+```
+
+:::caution[Important]
+You must pass a function to the `group` method. Passing a router directly will not work.
+:::

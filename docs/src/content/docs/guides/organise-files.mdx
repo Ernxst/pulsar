@@ -1,0 +1,96 @@
+---
+title: Organising Files
+description: A guide in my new Starlight docs site.
+---
+
+import FileTree from '../../../components/FileTree.astro';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+As your project grows, it will become messy to keep all your routes in one file. Luckily,
+Pulsar allows you to split your routes into multiple files and inject them into your
+main router without losing type-safety.
+
+For this section, we'll assume the following project structure:
+
+<FileTree>
+	- package.json - tsconfig.json - src/ - router.ts - utils/ - index.ts -
+	auth.ts - routes/ - index.ts - users.ts - posts.ts
+</FileTree>
+
+With files
+
+- `src/router.ts` - The main router file
+- `src/utils/index.ts` - A file containing utility functions
+- `src/utils/auth.ts` - A file containing authentication functions
+- `src/routes/index.ts` - A file containing routes under `/index`
+- `src/routes/users.ts` - A file containing routes under `/users`
+- `src/routes/posts.ts` - A file containing routes under `/posts`
+
+<Tabs>
+	<TabItem label="src/routes/index.ts">
+  ```js
+export default function index(app: Pulsar) {
+  return app.get('/', () => {
+    return "Ok!"
+    })
+}
+```
+
+  </TabItem>
+</Tabs>
+
+Where in your `router.ts` file, you would have something like:
+
+```ts title="src/router.ts"
+import { Pulsar } from 'pulsar';
+import index from './routes/index';
+import users from './routes/users';
+import posts from './routes/posts';
+
+export const appRouter = new Pulsar().use(index).use(users).use(posts);
+export type AppRouter = typeof appRouter;
+```
+
+If you hover over your `appRouter`, you should be able to see that the type of these routes
+have been injected into the router.
+
+##
+
+Now, it is likely that your routes will need to share some common context that you'll need inside
+your route handlers which is lost if you split your routes into separate functions like this.
+
+The simple solution is to extract this context into [middleware](/basics/middleware) and inject it
+into your exported functions.
+
+For example, if you have a `user` object that you want to be available in all your routes, you
+can define middleware:
+
+<Tabs>
+<TabItem label="src/middleware.ts">
+
+```ts title="src/middleware.ts"
+import { middleware } from 'pulsar';
+
+export const user = middleware().define(async ({ header }) => {
+	const user = await getUser(headers.authorisation);
+	return { user };
+});
+```
+
+  </TabItem>
+
+    <TabItem label="src/routes/users.ts">
+
+```typescript
+import type { Pulsar } from 'pulsar';
+import { user } from '../middleware';
+
+export default function users(app: Pulsar) {
+	return app.use(user).get('/', () => {
+		return 'Ok!';
+	});
+}
+```
+
+  </TabItem>
+</Tabs>

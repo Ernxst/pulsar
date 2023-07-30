@@ -1,0 +1,58 @@
+---
+title: Installation
+description: A guide in my new Starlight docs site.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+The quickest way to create a new Pulsar API is using `create pulsar` as shown in the
+[Getting Started](/start-here/getting-started) guide. If you want to add Pulsar to an existing project,
+this guide will explain how.
+
+## Setup Pulsar
+
+## Manual Setup
+
+This guide will walk you through the steps to manually install and configure a new Pulsar project
+if you prefer not to use the [automatic CLI tool](#).
+
+### 1. Create your directory
+
+Create an empty directory with the name of your project, and then navigate into it.
+
+```bash
+mkdir my-pulsar-project
+cd my-pulsar-project
+```
+
+Once you are in your new directory, create your project package.json file. This is how you will
+manage your project dependencies, including Astro. If you aren't familiar with this file format,
+run the following command to create one.
+
+### 2. Install Pulsar
+
+<Tabs>
+	<TabItem label="npm">
+```bash
+npm i pulsar
+```
+  </TabItem>
+
+{' '}
+
+<TabItem label="pnpm">```bash pnpm i pulsar ```</TabItem>
+
+{' '}
+
+<TabItem label="Yarn">```bash yarn add pulsar ```</TabItem>
+
+  <TabItem label="bun">
+```bash
+bun add pulsar
+```
+  </TabItem>
+</Tabs>
+
+## Starter Templates
+
+## Next Steps

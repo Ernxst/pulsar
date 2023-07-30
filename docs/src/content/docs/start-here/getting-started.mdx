@@ -1,0 +1,144 @@
+---
+title: Getting Started
+description: A guide in my new Starlight docs site.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+## What is Pulsar?
+
+Pulsar is a dead-simple, type-safe API web framework built for the edge.
+
+## Key Features
+
+- **Type-Safe** - Pulsar leverages TypeScript inference to minimise the manual type annotations needed.
+
+## Start your first project
+
+Get a new Pulsar project up and running locally with our helpful `create pulsar` CLI wizard!
+
+<Tabs>
+	<TabItem label="npm">
+```bash
+# create a new project with npm
+npm create pulsar@latest
+```
+  </TabItem>
+
+{' '}
+
+<TabItem label="pnpm">
+	```bash # create a new project with pnpm pnpm create pulsar@latest ```
+</TabItem>
+
+{' '}
+
+<TabItem label="Yarn">
+	```bash # create a new project with yarn yarn create pulsar@latest ```
+</TabItem>
+
+  <TabItem label="bun">
+```bash
+# create a new project with bun
+bun create pulsar@latest
+```
+</TabItem>
+</Tabs>
+
+Our [Installation Guide](/start-here/installation) has full, step-by-step instructions for installing
+Pulsar from a template, and for installing Pulsar manually.
+
+## Your first Pulsar app
+
+Writing an API in Pulsar is not much different to any other API framework out there.
+
+### Hello World
+
+The most basic Pulsar app looks like this:
+
+```typescript filename="src/index.ts"
+import { Pulsar } from 'Pulsar';
+
+const app = new Pulsar().get('/', () => {
+	return 'Hello World!';
+});
+
+export default app;
+```
+
+All we've done is imported and created a new instance of `Pulsar` - our server - and added a route to it.
+This route is a `GET` request to the `/` path, and returns a string.
+
+After starting a development server, go to `http://localhost:8787` in your browser. You should see `Hello World!`
+displayed there.
+
+### Returning JSON
+
+So, we can return strings; to return JSON, we just return an object instead of a string:
+
+```typescript filename="src/index.ts"
+import { Pulsar } from 'Pulsar';
+
+const app = new Pulsar().get('/', () => {
+	return {
+		message: 'Hello World!',
+	};
+});
+
+export default app;
+```
+
+Notice how we don't have to wrap our object in a `Response` object or anything like that.
+Pulsar will automatically convert it to JSON for you, and will set the `Content-Type`
+header to `application/json`.
+
+After starting a development server, go to `http://localhost:8787` in your browser. You should see
+the following displayed there:
+
+```json
+{
+	"message": "Hello World!"
+}
+```
+
+### Returning HTML
+
+Returning HTML is just as easy as returning JSON/text. We just return a string instead of an object like
+we did in the [Hello World](#hello-world) example, except we use the `html` helper method:
+
+```tsx filename="src/index.ts"
+import { Pulsar } from 'Pulsar';
+
+const app = new Pulsar().get('/', (ctx) => {
+	return ctx.html(`<h1>Hello World!</h1>`);
+});
+
+export default app;
+```
+
+You may notice now our route has a `ctx` parameter - this is the route `Context` object, which contains
+a whole host of information about the request and response as well as several helper functions.
+We'll go into more detail about this in the [Routing](/basics/routing) section.
+
+After starting a development server, go to `http://localhost:8787` in your browser. You should see
+the following displayed there:
+
+```html
+<h1>Hello World!</h1>
+```
+
+Again, Pulsar will automatically set the `Content-Type` header to `text/html` for you.
+
+{/* TIP: There are several more helper methods for different response types in the [Section]() section */}
+
+## Next Steps
+
+That's really are there is to Pulsar.
+Now you've got a basic understanding of how to write a Pulsar app, you are ready to start building
+your own API. The recommended next steps are:
+
+- Structuring your API through [Routing](/basics/routing)
+- Using route contexts to your advantage with [Contexts](/basics/context)
+- Handling errors with [Error Handling](/basics/error-handling)
+- Enhancing your routes with [Middleware](/basics/middleware)
+- Validating requests with [Validation](/basics/validation)

@@ -1,0 +1,18 @@
+---
+title: Examples
+description: ''
+---
+
+Below is a collection of simple examples/recipes for common use cases. For more
+fleshed-out examples, check the [`/examples`](https://github.com/Ernxst/pulsar/examples)
+directory in the repository for full projects.
+
+## Base Path
+
+You can set a base path for your API by simply grouping your routes under a prefix:
+
+```typescript
+import { Pulsar } from "pulsar";
+
+const app = new Pulsar().group("/api/v1", (app) => ...)
+```

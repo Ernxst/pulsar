@@ -1,0 +1,114 @@
+---
+title: Pulsar Fetch
+description: A guide in my new Starlight docs site.
+---
+
+Since your backend API is written in JavaScript, it would make most sense to share
+your types between frontend and backend. This improves type-safety and developer
+experience, as you can use the same types in both your frontend and backend.
+
+Instead of explicitly typing your API inputs and outputs to support this, you can
+use `@pulsar/fetch` to create a type-safe
+[`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/fetch)
+function from the type of your `Pulsar` router.
+
+:::caution
+This package is in development and relies fully on TypeScript inference.
+If you run into slow compilation times, slow IDE performance or other issues,
+please [open an issue](https://github.com/Ernxst/pulsar/issues).
+:::
+
+## Setup
+
+:::tip
+To get the best out of this, validate your inputs (and query parameters) with
+[`zod`](https://github.com/colinhacks/zod) according to the [Validation](/basics/validation)
+guide.
+:::
+
+### 1. Installation
+
+Assuming you already have `pulsar` installed, you can install `@pulsar/fetch` with:
+
+### 2. Export router type
+
+In your backend API, export the type of your router:
+
+```typescript
+import { Pulsar } from 'pulsar';
+
+const appRouter = new Pulsar();
+export type AppRouter = typeof appRouter;
+```
+
+### 3. Create fetch function
+
+In your frontend, create a `fetch` function from the router type:
+
+```typescript
+import { createFetch } from '@pulsar/fetch';
+// Use a type import to ensure the type is imported but not the value
+import type { AppRouter } from 'my-backend-api';
+
+const customFetch = createFetch<AppRouter>({ url: 'http://localhost:3000' });
+```
+
+And now the `fetch` function is type-safe - The `customFetch` function will only accept valid
+string routes from your router. For each route, the `customFetch` function will only accept
+valid request bodies, path parameters and query parameters and will return the correct output type -
+deserialising it for you based on the
+[`Content-Type`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)
+header of the response.
+
+:::caution
+The `createFetch` function is not a runtime function, it is a type-level function and
+does nothing to prevent you from passing invalid arguments at runtime.
+:::
+
+:::tip
+If you are using plain JavaScript:
+
+```javascript
+import { createFetch } from '@pulsar/fetch';
+
+/**
+ * @typedef {import("my-backend-api").AppRouter} AppRouter
+ */
+
+/** @type {import("@pulsar/fetch").Fetch<AppRouter> } */
+const customFetch = createFetch({ url: 'http://localhost:3000' });
+```
+
+:::
+
+## Configuration
+
+## Web Standards
+
+Instead of using a custom API client, `createFetch` returns a wrapper around the standard
+[`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/fetch) function, so it also accepts
+the same configuration options as `fetch`:
+
+```typescript
+const customFetch = createFetch<AppRouter>({
+	url: 'http://localhost:3000',
+});
+
+customFetch('/api/users', {
+	method: 'POST',
+	headers: {
+		'Content-Type': 'application/json',
+	},
+});
+```
+
+Only the `body` option differs as well as the addition of the `query` and `params` options.
+Extra headers will be merged with the default headers that were passed
+as [`options`][#configuration].
+
+By using the standard `fetch` function, your fetching code is less coupled to Pulsar.
+Migrating away from `@pulsar/fetch` is as simple as:
+
+- Replacing `createFetch` with `fetch`
+- Stringifying the request body
+- Inlining path parameters and query parameters
