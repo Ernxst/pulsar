@@ -1,12 +1,14 @@
+import type { HasOptionalKeys, HasRequiredKeys } from 'type-fest';
 import type {
+	AnyRouter,
+	HttpMethod,
 	Route,
+	inferPathParams,
 	inferRouteInput,
 	inferRouteOutput,
 	inferRouteQuery,
-} from 'src/route/types';
-import type { AnyRouter } from 'src/router/types';
-import type { HasOptionalKeys, HasRequiredKeys } from 'type-fest';
-import type { HttpMethod, inferPathParams, inferRoutes } from '../types/util';
+	inferRoutes,
+} from 'pulsar';
 
 export type GlobalFetchParams = NonNullable<Parameters<typeof fetch>[1]>;
 

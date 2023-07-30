@@ -50,8 +50,10 @@ export interface RouteContext<
 	locals: TContext;
 	/**
 	 * Redirect to a new path. You can either throw or return this.
+	 * @param path The path to redirect to.
+	 * @param status The status code to use. Defaults to 302.
 	 */
-	redirect(path: string, status?: RedirectStatus): void;
+	redirect(path: string | URL, status?: RedirectStatus): void;
 	/**
 	 * Set the response status code.
 	 */

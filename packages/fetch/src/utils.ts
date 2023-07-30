@@ -1,4 +1,4 @@
-import type { CreateFetchOptions } from '.';
+import type { CreateFetchOptions } from './fetch';
 
 export function createURL(
 	baseUrl: string,

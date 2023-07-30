@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "dist",
+    "lib": ["DOM", "ESNext", "DOM.Iterable"]
+  },
+  "include": ["src", "vitest.config.ts", "package.json", "tsconfig.json"],
+  "exclude": ["node_modules", "dist"]
+}

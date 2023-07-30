@@ -7,9 +7,6 @@ export {
 } from './errors';
 export type { ErrorHandler, ErrorCode, ErrorContext } from './errors/types';
 
-export type { Fetch, FetchOptions, GlobalFetchParams } from './fetch/types';
-export { createFetch } from './fetch';
-
 export type { Middleware, MiddlewareContext } from './middleware/types';
 export { middleware } from './middleware';
 

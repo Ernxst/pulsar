@@ -1,5 +1,5 @@
-import type { AnyRouter } from 'src/router/types';
-import { parseBody } from 'src/utils';
+import type { AnyRouter } from 'pulsar';
+import { parseBody } from 'pulsar/internals';
 import type { Promisable } from 'type-fest';
 import type { Fetch, GlobalFetchParams } from './types';
 import { createHeaders, createURL } from './utils';

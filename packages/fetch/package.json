@@ -1,37 +1,23 @@
 {
-  "name": "pulsar",
+  "name": "@pulsar/fetch",
   "type": "module",
   "version": "0.0.1",
-  "description": "A dead-simple, type-safe API framework built on Web standards for the edge.",
+  "description": "A tiny add-on for creating type-safe fetch functions for Pulsar routers",
   "author": "Ernest Nkansah-Badu <ernestjbadu@outlook.com>",
   "license": "MIT",
   "homepage": "https://pulsarjs.dev",
   "repository": {
     "type": "git",
     "url": "https://github.com/Ernxst/pulsar.git",
-    "directory": "packages/pulsar"
+    "directory": "packages/fetch"
   },
   "bugs": {
     "url": "https://github.com/Ernxst/pulsar/issues"
   },
   "keywords": [
     "pulsar",
-    "edge",
-    "web",
-    "app",
-    "http",
-    "application",
-    "framework",
-    "router",
-    "cloudflare",
-    "workers",
-    "fastly",
-    "compute@edge",
-    "deno",
-    "bun",
-    "lagon",
-    "lambda",
-    "nodejs"
+    "fetch",
+    "web"
   ],
   "sideEffects": false,
   "publishConfig": {
@@ -42,11 +28,6 @@
       "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs",
       "import": "./dist/index.js"
-    },
-    "./internals": {
-      "types": "./dist/internals/index.d.ts",
-      "require": "./dist/internals/index.cjs",
-      "import": "./dist/internals/index.js"
     }
   },
   "main": "dist/index.cjs",
@@ -56,9 +37,6 @@
     "*": {
       ".": [
         "./dist/index.d.ts"
-      ],
-      "internals": [
-        "./dist/internals/index.d.ts"
       ]
     }
   },
@@ -79,19 +57,14 @@
     "test:types": "vitest typecheck"
   },
   "peerDependencies": {
-    "@cloudflare/workers-types": "^4.20230724.0",
-    "zod": "^3.20.2"
+    "pulsar": "^0.0.1"
   },
   "peerDependenciesMeta": {
-    "@cloudflare/workers-types": {
-      "optional": true
-    },
-    "zod": {
-      "optional": true
+    "pulsar": {
+      "optional": false
     }
   },
   "dependencies": {
-    "pretty-cache-header": "1.0.0",
     "type-fest": "4.0.0"
   }
 }
