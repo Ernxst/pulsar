@@ -2,3 +2,209 @@
 title: Middleware
 description: ''
 ---
+
+**Middleware** is simplify a function that runs before/after a route handler. In Pulsar,
+middleware can:
+
+- Modify request object
+- Modify response status
+- Modify request/response headers
+- Modify request/response body
+- Modify route context
+- Throw errors
+
+And so much more; this makes middleware extremely powerful for composing reusable
+business logic across many routes.
+
+For example, we can create a middleware to log all requests:
+
+```typescript
+import { middleware, Pulsar } from 'pulsar';
+
+const logger = middleware().define(({ request }) => {
+	console.log(`${request.method.toUppercase()} ${request.url}`);
+});
+
+const app = new Pulsar().use(logger).get('/', () => 'Hello World');
+```
+
+Whenever a request is made to `/`, the logger middleware will be executed.
+
+## Modifying Context
+
+We can modify the [`locals`](/basics/context#locals) object in the context to
+inject data into the context. Consider the following middleware to inject a `session`
+into the context:
+
+```typescript
+import { middleware, Pulsar } from 'pulsar';
+
+interface Session {
+	userId: string;
+	token: string;
+}
+
+const session = middleware().define(({ request }) => {
+	const session = getSessionFromDb(
+		request.headers['x-session-id']
+	) as Session | null;
+	return { session };
+});
+```
+
+Using it in our router now enhances the [`locals`](/basics/context#locals) with the `Session` type:
+
+```typescript
+const app = new Pulsar().use(session).get('/', ({ locals }) => locals.session);
+```
+
+:::tip
+When modifying context, you only need to return what has changed, not the entire context
+object - Pulsar will merge the changes for you.
+:::
+
+## Composing Middleware
+
+Middleware can be composed together to create more complex business logic. For example,
+we can create `requiresAuth` middleware that uses the `session` middleware to ensure
+a user is logged in:
+
+```typescript
+const requiresAuth = middleware()
+	.use(session)
+	.define(({ locals }) => {
+		if (!locals.session) {
+			throw new Error('Unauthorized');
+		}
+	});
+```
+
+Notice how we've used the `use` to compose the `session` middleware. This will
+ensure that the `session` middleware is executed before the `requiresAuth` middleware.
+We can call `use` multiple times to compose multiple middleware together.
+
+Additionally, the type of the context passed to `requiresAuth` is also now inferred
+to include the modified context from the `session` middleware.
+
+Using this `requiresAuth` middleware in our router will now ensure that the user
+is logged in before accessing the route:
+
+```typescript
+const app = new Pulsar()
+	.use(requiresAuth)
+	.get('/', ({ locals }) => locals.session);
+```
+
+:::note
+If you hover over the type of `locals.session` in your editor, you'll notice it
+is now inferred to be `Session` instead of `Session | null`. This is because
+we've thrown an error in the `requiresAuth` middleware if the session is not
+found.
+:::
+
+## Modifying the Response
+
+What if we want middleware to run _after_ the route handler? We can use the `next`
+function stored in the middleware context:
+
+```typescript
+const logger = middleware().define(async ({ request, next }) => {
+	const start = Date.now();
+	await next();
+
+	console.log(
+		`${request.method.toUppercase()} ${request.url} - ${Date.now() - start}ms`
+	);
+});
+```
+
+:::tip
+The context middleware receives is the same context that is passed to the route
+with the addition of the `next` function.
+:::
+
+### Using the `next` function
+
+The `next` function also returns a promise that resolves to the response body -
+we can use this to create middleware that modifies the response body. For example,
+we can create middleware to convert the body to `snake_case`:
+
+```typescript
+import { snakeCaseKeys } from 'some_snake_case_library';
+
+const snakeCase = middleware().define(async ({ next, json }) => {
+	const body = await next();
+	const snakeCased = snakeCaseKeys(body);
+	json(snakeCased);
+});
+```
+
+:::caution[Important]
+Since we are modifying the response body, we need to use the `json` function.
+Returning the body from the `next` function will modify the `locals` object which is not
+what we want.
+:::
+
+## Execution Order
+
+Middleware is executed in the order it is defined. For example, consider the following
+middleware:
+
+```typescript
+import { middleware } from 'pulsar';
+
+const middleware1 = middleware().define(({ next }) => {
+  console.log('middleware1 start');
+  await next();
+  console.log('middleware1 end');
+});
+
+const middleware2 = middleware().define(({ next }) => {
+  console.log('middleware2 start');
+  await next();
+  console.log('middleware2 end');
+});
+
+const middleware3 = middleware().define(({ next }) => {
+  console.log('middleware3' start);
+  await next();
+  console.log('middleware3 end');
+});
+```
+
+When used in a router, the middleware will be executed in the order they are added to the router:
+
+```typescript
+import { Pulsar } from 'pulsar';
+
+const app = new Pulsar()
+	.use(middleware1)
+	.use(middleware2)
+	.use(middleware3)
+	.get('/', () => {
+		console.log('route handler');
+		return 'Hello World';
+	});
+```
+
+When a request is made to `/`, the following will be logged:
+
+```
+middleware1 start
+middleware2 start
+middleware3 start
+route handler
+middleware3 end
+middleware2 end
+middleware1 end
+```
+
+:::tip
+The chain of execution becomes more complicated when composing middleware, so it is
+recommended to use a debugger/log statements to visualise the execution order
+:::
+
+:::note
+Middleware will be deduplicated if added multiple times to the same router (whether
+directly or through composition).
+:::
