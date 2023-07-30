@@ -1,6 +1,6 @@
 import helmetLib, { type HelmetOptions } from 'helmet';
-import type { AnyRouteContext } from 'src/route/types';
-import { middleware } from '..';
+import type { AnyRouteContext } from 'pulsar';
+import { middleware } from 'pulsar';
 
 type Context = Pick<AnyRouteContext, 'headers'>;
 
@@ -40,7 +40,7 @@ function promisify(context: Context, options: HelmetOptions) {
 /**
  * Middleware to add {@linkcode helmet} headers to the response
  */
-export function helmet(options: HelmetOptions) {
+export function helmet(options: HelmetOptions = {}) {
 	return middleware().define((ctx) => {
 		promisify(ctx, options);
 	});

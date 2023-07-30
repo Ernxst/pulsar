@@ -1,11 +1,13 @@
 import type { inferErrorShape, inferRouterContext } from 'pulsar';
 import { Pulsar } from 'pulsar';
-import { sentry } from 'pulsar/sentry';
+import { sentry } from '@pulsar/sentry';
+import { helmet } from '@pulsar/helmet';
 import users from './routes/users';
 
 export const appRouter = new Pulsar()
 	// Built-in middleware
 	.use(sentry({ dsn: '<SENTRY_DSN>' }))
+	.use(helmet())
 	// Custom middleware, injects a version and platform into the route context
 	.use(() => ({ version: 'v1', platform: 'workerd' }))
 	// Merge routes into the router

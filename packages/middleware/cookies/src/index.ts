@@ -1,4 +1,4 @@
-import { middleware } from '..';
+import { middleware } from 'pulsar';
 import type { Cookie, CookieOptions } from './types';
 
 interface CookieContext {
@@ -35,8 +35,7 @@ export type { Cookie, CookieOptions } from './types';
 export { parse, serialise } from './utils';
 
 /**
- *
- * @returns A middleware that adds cookie support to the context object.
+ * @returns Middleware that adds cookie support to the context object.
  */
 export function cookies() {
 	return middleware().define(() => {

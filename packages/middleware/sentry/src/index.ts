@@ -1,5 +1,5 @@
 import { type Options, Toucan } from 'toucan-js';
-import { middleware } from '..';
+import { middleware } from 'pulsar';
 
 class MockContext implements ExecutionContext {
 	passThroughOnException(): void {
@@ -10,8 +10,6 @@ class MockContext implements ExecutionContext {
 		await promise;
 	}
 }
-
-export type { Toucan, Options } from 'toucan-js';
 
 /**
  * Middleware to interact with Sentry in a request. It also logs any

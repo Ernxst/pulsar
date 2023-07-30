@@ -8,7 +8,8 @@
   "homepage": "https://pulsarjs.dev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ernxst/pulsar.git"
+    "url": "https://github.com/Ernxst/pulsar.git",
+    "directory": "packages/pulsar"
   },
   "bugs": {
     "url": "https://github.com/Ernxst/pulsar/issues"
@@ -41,23 +42,7 @@
       "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs",
       "import": "./dist/index.js"
-    },
-    "./cookies": {
-      "types": "./dist/middleware/cookies/index.d.ts",
-      "require": "./dist/middleware/cookies/index.cjs",
-      "import": "./dist/middleware/cookies/index.js"
-    },
-    "./sentry": {
-      "types": "./dist/middleware/sentry/index.d.ts",
-      "require": "./dist/middleware/sentry/index.cjs",
-      "import": "./dist/middleware/sentry/index.js"
-    },
-    "./helmet": {
-      "types": "./dist/middleware/helmet/index.d.ts",
-      "require": "./dist/middleware/helmet/index.cjs",
-      "import": "./dist/middleware/helmet/index.js"
-    },
-    "./package.json": "./package.json"
+    }
   },
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -66,29 +51,18 @@
     "*": {
       ".": [
         "./dist/index.d.ts"
-      ],
-      "./cookies": [
-        "./dist/middleware/cookies/index.d.ts"
-      ],
-      "sentry": [
-        "./dist/middleware/sentry/index.d.ts"
-      ],
-      "helmet": [
-        "./dist/middleware/helmet/index.d.ts"
       ]
     }
   },
   "files": [
-    "dist",
-    "README.md"
+    "dist"
   ],
   "engines": {
-    "node": ">=v16.0.0",
-    "pnpm": ">=8.2.0"
+    "node": ">=v16.0.0"
   },
   "scripts": {
     "------------------------------------------------------------------------------": "",
-    "build": "tsup --clean",
+    "build": "tsup --dts",
     "postbuild": "publint",
     "-------------------------------------------------------------------------------": "",
     "typecheck": "tsc --noEmit",
@@ -109,17 +83,7 @@
     }
   },
   "dependencies": {
-    "helmet": "7.0.0",
     "pretty-cache-header": "1.0.0",
-    "toucan-js": "3.2.0",
     "type-fest": "4.0.0"
-  },
-  "devDependencies": {
-    "@vitest/coverage-istanbul": "0.33.0",
-    "publint": "0.2.0",
-    "tsup": "7.1.0",
-    "typescript": "5.1.6",
-    "vite-tsconfig-paths": "4.2.0",
-    "vitest": "0.33.0"
   }
 }
