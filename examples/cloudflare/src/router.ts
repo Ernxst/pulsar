@@ -11,8 +11,9 @@ export const appRouter = new Pulsar()
 	// Merge routes into the router
 	.route(users)
 	// Error handler, including 404
-	.onError(({ status, locals, ...ctx }) => {
+	.onError(({ status, cache, locals, ...ctx }) => {
 		if (ctx.code === 'NOT_FOUND') {
+			cache({ maxAge: '1h' });
 			status(404);
 			return { detail: `Not found: ${ctx.path.pathname}`, code: ctx.code };
 		}
