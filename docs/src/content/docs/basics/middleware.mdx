@@ -30,6 +30,25 @@ const app = new Pulsar().use(logger).get('/', () => 'Hello World');
 
 Whenever a request is made to `/`, the logger middleware will be executed.
 
+:::tip
+
+You can define middleware as function. This is useful e.g., if you need to pass configurations:
+
+```typescript
+import { middleware, Pulsar } from 'pulsar';
+
+interface LoggerOptions {
+  logLevel: string;
+}
+
+function logger({ logLevel }: LoggerOptions) {
+  return middleware().define(() => {
+  	console.log(`${logLevel} ${request.method.toUppercase()} ${request.url}`);
+  });
+}
+```
+:::
+
 ## Modifying Context
 
 We can modify the [`locals`](/basics/context#locals) object in the context to
