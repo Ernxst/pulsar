@@ -13,8 +13,17 @@ main router without losing type-safety.
 For this section, we'll assume the following project structure:
 
 <FileTree>
-	- package.json - tsconfig.json - src/ - router.ts - utils/ - index.ts -
-	auth.ts - routes/ - index.ts - users.ts - posts.ts
+	- package.json
+  - tsconfig.json
+  - src/
+    - router.ts
+    - utils/
+      - index.ts
+	    - auth.ts
+    - routes/
+      - index.ts
+      - users.ts
+      - posts.ts
 </FileTree>
 
 With files
@@ -81,7 +90,7 @@ export const user = middleware().define(async ({ header }) => {
 
     <TabItem label="src/routes/users.ts">
 
-```typescript
+```typescript title="src/routes/users.ts"
 import type { Pulsar } from 'pulsar';
 import { user } from '../middleware';
 
