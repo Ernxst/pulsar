@@ -3,7 +3,7 @@ title: Getting Started
 description: A guide in my new Starlight docs site.
 ---
 
-import { Tabs, TabItem } from '@astrojs/starlight/components';
+import Installation from '../../../components/Installation.astro';
 
 ## What is Pulsar?
 
@@ -17,33 +17,11 @@ Pulsar is a dead-simple, type-safe API web framework built for the edge.
 
 Get a new Pulsar project up and running locally with our helpful `create pulsar` CLI wizard!
 
-<Tabs>
-	<TabItem label="npm">
-```bash
-# create a new project with npm
-npm create pulsar@latest
-```
-  </TabItem>
-
-{' '}
-
-<TabItem label="pnpm">
-	```bash # create a new project with pnpm pnpm create pulsar@latest ```
-</TabItem>
-
-{' '}
-
-<TabItem label="Yarn">
-	```bash # create a new project with yarn yarn create pulsar@latest ```
-</TabItem>
-
-  <TabItem label="bun">
-```bash
-# create a new project with bun
-bun create pulsar@latest
-```
-</TabItem>
-</Tabs>
+<Installation
+	packages={['pulsar@latest']}
+	comment="create a new project"
+	type="create"
+/>
 
 Our [Installation Guide](/start-here/installation) has full, step-by-step instructions for installing
 Pulsar from a template, and for installing Pulsar manually.

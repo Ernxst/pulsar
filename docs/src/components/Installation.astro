@@ -1,0 +1,55 @@
+---
+import { TabItem, Tabs } from '@astrojs/starlight/components';
+import { Code } from 'astro/components';
+
+export interface Props {
+	type?: 'install' | 'create';
+	packages: string[];
+	comment?: string;
+}
+
+const { packages, comment, type = 'install' } = Astro.props;
+const cmds = packages.join(' ');
+
+const Commands = {
+	NPM: {
+		install: 'npm i',
+		create: 'npm create',
+	},
+	PNPM: {
+		install: 'pnpm i',
+		create: 'pnpm create',
+	},
+	YARN: {
+		install: 'yarn add',
+		create: 'yarn create',
+	},
+	BUN: {
+		install: 'bun add',
+		create: 'bun create',
+	},
+} as const;
+
+function getCode(manager: keyof typeof Commands) {
+	const pkgManagerPrefix = Commands[manager][type];
+	const shellCmd = `${pkgManagerPrefix} ${cmds}`;
+	return comment ? `# ${comment}\n${shellCmd}` : shellCmd;
+}
+
+const managers = [
+	{ label: 'npm', code: getCode('NPM') },
+	{ label: 'pnpm', code: getCode('PNPM') },
+	{ label: 'Yarn', code: getCode('YARN') },
+	{ label: 'bun', code: getCode('BUN') },
+];
+---
+
+<Tabs>
+	{
+		managers.map((m) => (
+			<TabItem label={m.label}>
+				<Code code={m.code} lang="bash" />
+			</TabItem>
+		))
+	}
+</Tabs>
