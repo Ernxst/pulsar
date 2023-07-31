@@ -84,6 +84,12 @@ importers:
         specifier: 0.32.3
         version: 0.32.3
     devDependencies:
+      astro-html-minifier:
+        specifier: 0.5.0
+        version: 0.5.0
+      astro-purgecss:
+        specifier: 2.3.0
+        version: 2.3.0(astro@2.9.3)
       astro-robots-txt:
         specifier: 0.5.0
         version: 0.5.0
@@ -1827,6 +1833,15 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
+  /@minify-html/node@0.11.1:
+    resolution: {integrity: sha512-f+3VvBszFaY5xx8e7POka1K1FnVZur8Apk18uaI4lSyZrzmpLlkSBZfXOPHVhChFc0TDI+RQuBD+ws4qIt9+mg==}
+    engines: {node: '>= 8.6.0'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      cargo-cp-artifact: 0.1.8
+    dev: true
+
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -2557,6 +2572,21 @@ packages:
       - supports-color
     dev: true
 
+  /astro-html-minifier@0.5.0:
+    resolution: {integrity: sha512-DpVLTGPC6TataNbVZ0WeR9YH2trgQRrIxbRpQKnrb2975LbYGKPtcKhda2kli9Gsh0aQ8kp0txE308VlEC4VIg==}
+    dependencies:
+      '@minify-html/node': 0.11.1
+    dev: true
+
+  /astro-purgecss@2.3.0(astro@2.9.3):
+    resolution: {integrity: sha512-HeIhTFjNupoPP7w8rQpadAmc1Y7zrUOq2jbF6z66DwZ5+bshh/jNf5pviz6JsSQrNviiIL/mLw4EyVK69krz+w==}
+    peerDependencies:
+      astro: ^2.0.0
+    dependencies:
+      astro: 2.9.3(@types/node@20.4.5)(sharp@0.32.3)
+      purgecss: 5.0.0
+    dev: true
+
   /astro-robots-txt@0.5.0:
     resolution: {integrity: sha512-MJDcxBDjEKSp7Uvw32cnmkPHlmjQ/pW5JwzMhKEegFRoGaiSh2i1kkh1QEhk1UpGnAsSondWCoIt2xpG8qjSgA==}
     dependencies:
@@ -2892,6 +2922,11 @@ packages:
       - supports-color
     dev: true
 
+  /cargo-cp-artifact@0.1.8:
+    resolution: {integrity: sha512-3j4DaoTrsCD1MRkTF2Soacii0Nx7UHCce0EwUf4fHnggwiE4fbmF2AbnfzayR36DF8KGadfh7M/Yfy625kgPlA==}
+    hasBin: true
+    dev: true
+
   /ccount@2.0.1:
     resolution: {integrity: sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==}
 
@@ -3058,6 +3093,11 @@ packages:
   /commander@4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
+    dev: true
+
+  /commander@9.5.0:
+    resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
+    engines: {node: ^12.20.0 || >=14}
     dev: true
 
   /common-ancestor-path@1.0.1:
@@ -6724,6 +6764,16 @@ packages:
   /punycode@2.3.0:
     resolution: {integrity: sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==}
     engines: {node: '>=6'}
+    dev: true
+
+  /purgecss@5.0.0:
+    resolution: {integrity: sha512-RAnuxrGuVyLLTr8uMbKaxDRGWMgK5CCYDfRyUNNcaz5P3kGgD2b7ymQGYEyo2ST7Tl/ScwFgf5l3slKMxHSbrw==}
+    hasBin: true
+    dependencies:
+      commander: 9.5.0
+      glob: 8.1.0
+      postcss: 8.4.27
+      postcss-selector-parser: 6.0.13
     dev: true
 
   /q@1.5.1:

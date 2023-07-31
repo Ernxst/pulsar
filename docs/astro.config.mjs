@@ -6,6 +6,8 @@ import rehypeSlug from 'rehype-slug';
 import remarkSmartypants from 'remark-smartypants';
 import links from 'starlight-links-validator';
 import robots from 'astro-robots-txt';
+import purgecss from 'astro-purgecss';
+import html from 'astro-html-minifier';
 import { autolinkConfig } from './plugins/rehype-autolink-config';
 
 // https://astro.build/config
@@ -25,6 +27,8 @@ export default defineConfig({
 		robots(),
 		starlight({
 			title: 'Pulsar',
+			tagline:
+				'A dead-simple, type-safe web framework built on Web standards for the edge.',
 			description:
 				'A dead-simple, type-safe web framework built on Web standards for the edge.',
 			customCss: [
@@ -106,6 +110,8 @@ export default defineConfig({
 				},
 			],
 		}),
+		purgecss(),
+		html(),
 	],
 
 	// Process images with sharp: https://docs.astro.build/en/guides/assets/#using-sharp
