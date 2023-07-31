@@ -1,0 +1,44 @@
+---
+import { TabItem, Tabs } from '@astrojs/starlight/components';
+import { JSDOM } from 'jsdom';
+
+const Commands = {
+	npm: { install: 'i', create: 'create' },
+	pnpm: { install: 'i', create: 'create' },
+	Yarn: { install: 'add', create: 'create' },
+	bun: { install: 'add', create: 'create' },
+};
+
+const content = await Astro.slots.render('default');
+const dom = new JSDOM(content);
+const lines = dom.window.document.querySelectorAll('.ec-line');
+
+const tabs = Object.entries(Commands).map(([pkg, cmds]) => {
+	lines.forEach((el) => {
+		el.querySelectorAll('span').forEach((word, idx) => {
+			if (idx === 1) {
+				word.textContent =
+					word.textContent === 'create' ? cmds.create : cmds.install;
+			}
+
+			word.textContent = word.textContent!.replace(
+				/(pnpm|npm|yarn|bun)/,
+				pkg.toLowerCase()
+			);
+		});
+	});
+
+	const html = dom.serialize().split('<body>')[1]!.split('</body>')[0];
+	return { label: pkg, content: html };
+});
+---
+
+<Tabs>
+	{
+		tabs.map(({ label, content }) => (
+			<TabItem label={label}>
+				<div set:html={content} />
+			</TabItem>
+		))
+	}
+</Tabs>

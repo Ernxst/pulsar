@@ -4,7 +4,7 @@ description: A guide in my new Starlight docs site.
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
-import Installation from '../../../components/Installation.astro';
+import PackageManagers from '../../../components/PackageManagers.astro';
 
 The quickest way to create a new Pulsar API is using `create pulsar` as shown in the
 [Getting Started](/start-here/getting-started) guide. If you want to add Pulsar to an existing project,
@@ -32,7 +32,9 @@ run the following command to create one.
 
 ### 2. Install Pulsar
 
-<Installation packages={['pulsar']} />
+<PackageManagers>
+	```bash # install with npm npm install pulsar ```
+</PackageManagers>
 
 ## Starter Templates
 

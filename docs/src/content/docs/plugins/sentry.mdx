@@ -3,7 +3,7 @@ title: Sentry
 description: ''
 ---
 
-import Installation from '../../../components/Installation.astro';
+import PackageManagers from '../../../components/PackageManagers.astro';
 
 Sentry middleware for Pulsar. This middleware sends captured exceptions to the specified Sentry data source name via
 [`toucan-js`](https://github.com/robertcepa/toucan-js).
@@ -12,7 +12,9 @@ This middleware also adds a `sentry` property to the route context locals, which
 
 ## Installation
 
-<Installation packages={['@pulsar/sentry']} />
+<PackageManagers>
+	```bash # install with npm npm install @pulsar/sentry ```
+</PackageManagers>
 
 ## Usage
 

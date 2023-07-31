@@ -8,6 +8,7 @@ import links from 'starlight-links-validator';
 import robots from 'astro-robots-txt';
 import purgecss from 'astro-purgecss';
 import html from 'astro-html-minifier';
+import astroExpressiveCode from 'astro-expressive-code';
 import { autolinkConfig } from './plugins/rehype-autolink-config';
 
 // https://astro.build/config
@@ -25,6 +26,7 @@ export default defineConfig({
 		links(),
 		sitemap(),
 		robots(),
+		astroExpressiveCode({ theme: 'min-dark' }),
 		starlight({
 			title: 'Pulsar',
 			tagline:

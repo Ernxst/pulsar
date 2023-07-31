@@ -3,7 +3,7 @@ title: Helmet
 description: ''
 ---
 
-import Installation from '../../../components/Installation.astro';
+import PackageManagers from '../../../components/PackageManagers.astro';
 
 Helmet middleware for Pulsar. This middleware is a wrapper around the Express
 [`helmet`](https://github.com/helmetjs/helmet) library helping to secure
@@ -11,7 +11,9 @@ Pulsar applications by setting various HTTP headers.
 
 ## Installation
 
-<Installation packages={['@pulsar/helmet']} />
+<PackageManagers>
+	```bash # install with npm npm install @pulsar/helmet ```
+</PackageManagers>
 
 ## Usage
 

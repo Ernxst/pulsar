@@ -3,7 +3,7 @@ title: Getting Started
 description: A guide in my new Starlight docs site.
 ---
 
-import Installation from '../../../components/Installation.astro';
+import PackageManagers from '../../../components/PackageManagers.astro';
 
 ## What is Pulsar?
 
@@ -17,11 +17,9 @@ Pulsar is a dead-simple, type-safe API web framework built for the edge.
 
 Get a new Pulsar project up and running locally with our helpful `create pulsar` CLI wizard!
 
-<Installation
-	packages={['pulsar@latest']}
-	comment="create a new project"
-	type="create"
-/>
+<PackageManagers>
+	```bash # create a new project with npm npm create pulsar@latest my-app ```
+</PackageManagers>
 
 Our [Installation Guide](/start-here/installation) has full, step-by-step instructions for installing
 Pulsar from a template, and for installing Pulsar manually.
@@ -34,7 +32,7 @@ Writing an API in Pulsar is not much different to any other API framework out th
 
 The most basic Pulsar app looks like this:
 
-```typescript filename="src/index.ts"
+```typescript title="src/index.ts"
 import { Pulsar } from 'Pulsar';
 
 const app = new Pulsar().get('/', () => {
@@ -54,7 +52,7 @@ displayed there.
 
 So, we can return strings; to return JSON, we just return an object instead of a string:
 
-```typescript filename="src/index.ts"
+```typescript title="src/index.ts"
 import { Pulsar } from 'Pulsar';
 
 const app = new Pulsar().get('/', () => {
@@ -84,7 +82,7 @@ the following displayed there:
 Returning HTML is just as easy as returning JSON/text. We just return a string instead of an object like
 we did in the [Hello World](#hello-world) example, except we use the `html` helper method:
 
-```tsx filename="src/index.ts"
+```tsx title="src/index.ts"
 import { Pulsar } from 'Pulsar';
 
 const app = new Pulsar().get('/', (ctx) => {
