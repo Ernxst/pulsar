@@ -9,7 +9,11 @@ import robots from 'astro-robots-txt';
 import purgecss from 'astro-purgecss';
 import html from 'astro-html-minifier';
 import astroExpressiveCode from 'astro-expressive-code';
+import AutoImport from 'astro-auto-import';
+import glob from 'fast-glob';
 import { autolinkConfig } from './plugins/rehype-autolink-config';
+
+const components = glob.sync('./src/components/**/*.astro');
 
 // https://astro.build/config
 export default defineConfig({
@@ -23,6 +27,19 @@ export default defineConfig({
 		],
 	},
 	integrations: [
+		AutoImport({
+			imports: [
+				...components,
+				{
+					'@astrojs/starlight/components': [
+						'Tabs',
+						'TabItem',
+						'Card',
+						'CardGrid',
+					],
+				},
+			],
+		}),
 		links(),
 		sitemap(),
 		robots(),

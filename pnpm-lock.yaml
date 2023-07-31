@@ -90,6 +90,9 @@ importers:
       '@types/jsdom':
         specifier: 21.1.1
         version: 21.1.1
+      astro-auto-import:
+        specifier: 0.3.0
+        version: 0.3.0(astro@2.9.3)
       astro-expressive-code:
         specifier: 0.19.0
         version: 0.19.0(astro@2.9.3)
@@ -102,6 +105,9 @@ importers:
       astro-robots-txt:
         specifier: 0.5.0
         version: 0.5.0
+      fast-glob:
+        specifier: 3.3.1
+        version: 3.3.1
       hast-util-from-html:
         specifier: 1.0.2
         version: 1.0.2
@@ -2118,6 +2124,10 @@ packages:
   /@types/node@17.0.45:
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
 
+  /@types/node@18.17.1:
+    resolution: {integrity: sha512-xlR1jahfizdplZYRU59JlUx9uzF1ARa8jbhM11ccpCJya8kvos5jwdm2ZAgxSCwOl0fq21svP18EVwPBXMQudw==}
+    dev: true
+
   /@types/node@20.4.5:
     resolution: {integrity: sha512-rt40Nk13II9JwQBdeYqmbn2Q6IVTA5uPhvSO+JVqdXw/6/4glI6oR9ezty/A9Hg5u7JH4OmYmuQ+XvjKm0Datg==}
 
@@ -2628,6 +2638,17 @@ packages:
   /astring@1.8.6:
     resolution: {integrity: sha512-ISvCdHdlTDlH5IpxQJIex7BWBywFWgjJSVdwst+/iQCoEYnyOaQ95+X1JGshuBjGp6nxKUy1jMgE3zPqN7fQdg==}
     hasBin: true
+
+  /astro-auto-import@0.3.0(astro@2.9.3):
+    resolution: {integrity: sha512-EfpraN8R1K27ka+/qj3rsUXPf0Zd/74gZTP2IHd+4dvZsXeCEB/ZzxoxLG4QJ3n5Zpxh0uHiWFUcjomJLGWUEw==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      astro: ^2.0.0
+    dependencies:
+      '@types/node': 18.17.1
+      acorn: 8.10.0
+      astro: 2.9.3(@types/node@20.4.5)(sharp@0.32.3)
+    dev: true
 
   /astro-eslint-parser@0.14.0:
     resolution: {integrity: sha512-3F8l1h7+5MNxzDg1cSQxEloalG7fj64K6vOERChUVG7RLnAzSoafADnPQlU8DpMM3WRNfRHSC4NwUCORk/aPrA==}
