@@ -4,7 +4,7 @@
 		{
 			"command": "./node_modules/.bin/astro dev",
 			"cwd": "${workspaceFolder}/docs",
-			"name": "Development server",
+			"name": "Docs Dev server",
 			"request": "launch",
 			"type": "node-terminal"
 		}
