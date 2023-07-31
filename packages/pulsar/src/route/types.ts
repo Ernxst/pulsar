@@ -78,8 +78,10 @@ export interface RouteContext<
 		(name: string): string | undefined;
 		/**
 		 * Set a response header, appending to any existing values.
+		 * @param name The header name
+		 * @param value The header value - if undefined, the header will be removed
 		 */
-		(name: string, value: string): void;
+		(name: string, value: string | undefined): void;
 	};
 
 	/**
