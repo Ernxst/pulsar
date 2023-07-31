@@ -29,10 +29,14 @@ html {
 }
 
 .content .anchor-link {
-	display: flex;
+	display: none;
 	align-items: center;
 	justify-content: center;
 	margin-left: 0.5rem;
+}
+
+.content .heading-wrapper:hover .anchor-link {
+  display: flex;
 }
 
 .content > h2 {
