@@ -1,0 +1,72 @@
+---
+title: Using Express Middleware
+description: ''
+---
+
+One of Pulsar's built-in middleware, [`helmet`](/plugins/helmet), is
+actually Express middleware. The `@pulsar/helmet` middleware is simply a wrapper around the
+Express [`helmet`](https://github.com/helmetjs/helmet) library. Here is the full soure code for the middleware:
+
+```typescript
+import helmetLib, { type HelmetOptions } from 'helmet';
+import type { AnyRouteContext } from 'pulsar';
+import { middleware } from 'pulsar';
+
+type Context = Pick<AnyRouteContext, 'headers'>;
+
+function makeResponse(context: Context) {
+	const res = context;
+
+	return Object.assign(res, {
+		setHeader(name: string, value: string) {
+			context.headers(name, value);
+		},
+
+		removeHeader(name: string) {
+			context.headers().delete(name);
+		},
+
+		end() {},
+	});
+}
+
+function promisify(context: Context, options: HelmetOptions) {
+	const middleware = helmetLib(options);
+
+	return new Promise<Context>((resolve, reject) => {
+		const ctx = makeResponse(context);
+
+		// @ts-expect-error it is not an IncomingMessage
+		middleware(context.request, ctx, (error: Error) => {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(ctx);
+			}
+		});
+	});
+}
+
+/**
+ * Middleware to add {@linkcode helmet} headers to the response
+ */
+export function helmet(options: HelmetOptions = {}) {
+	return middleware().define((ctx) => {
+		promisify(ctx, options);
+	});
+}
+```
+
+As you can see, we do not need to add much to get Express middleware working with Pulsar.
+The original Helmet library is callback-based, so we simply promisify it and return a promise
+that resolves when the Express middleware runs our callback.
+
+Additionally, the Express middleware expects `setHeader`, `removeHeader` and `end` methods
+on the response object, so we create a simple wrapper around the Pulsar context object
+to provide these methods.
+
+- `setHeader` sets a header on the response and does what `context.headers(name, value)` does.
+- `removeHeader` removes a header from the response and does what `context.headers(name, undefined)` does.
+- `end` is a no-op, since Pulsar does not have a concept of ending a response.
+
+So there you have it! You can use any Express middleware with Pulsar by following this pattern.

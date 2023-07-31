@@ -1,0 +1,50 @@
+---
+title: Sentry
+description: ''
+---
+
+import Installation from '../../../components/Installation.astro';
+
+Sentry middleware for Pulsar. This middleware sends captured exceptions to the specified Sentry data source name via
+[`toucan-js`](https://github.com/robertcepa/toucan-js).
+
+This middleware also adds a `sentry` property to the route context locals, which is an instance of the `Toucan` class.
+
+## Installation
+
+<Installation packages={['@pulsar/sentry']} />
+
+## Usage
+
+```typescript
+import { Pulsar } from 'pulsar';
+import { sentry } from '@pulsar/sentry';
+
+const app = new Pulsar().use(sentry());
+```
+
+## Options
+
+The `sentry` middleware accepts the following options, all of which are optional:
+
+- `options` (object): See the [`toucan-js` documentation](https://github.com/robertcepa/toucan-js) for more information on the available
+  options.
+- `callback` (function): A function that receives the Sentry instance as its first argument. This can be used to add custom
+  tags, context, etc. to the Sentry instance.
+
+```typescript
+import { Pulsar } from 'pulsar';
+import { sentry } from '@pulsar/sentry';
+
+const app = new Pulsar().use(
+	sentry(
+		{
+			dsn: 'https://...',
+			environment: 'production',
+		},
+		(sentry) => {
+			sentry.setTag('foo', 'bar');
+		}
+	)
+);
+```
