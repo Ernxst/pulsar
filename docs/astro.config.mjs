@@ -4,6 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeSlug from 'rehype-slug';
 import remarkSmartypants from 'remark-smartypants';
+import links from 'starlight-links-validator';
 import { autolinkConfig } from './plugins/rehype-autolink-config';
 
 // https://astro.build/config
@@ -18,6 +19,7 @@ export default defineConfig({
 		],
 	},
 	integrations: [
+		links(),
 		sitemap(),
 		starlight({
 			title: 'Pulsar',

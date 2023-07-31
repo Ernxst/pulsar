@@ -25,6 +25,8 @@
     "rehype-autolink-headings": "6.1.1",
     "rehype-slug": "5.1.0",
     "remark-smartypants": "2.0.0",
+    "shiki": "0.14.3",
+    "starlight-links-validator": "0.1.1",
     "unist-util-visit": "5.0.0"
   }
 }
