@@ -97,7 +97,7 @@ app.get('/users/:id', ({ params }) => {
 And you visit `GET /users/123`, then the `params` object will be `{ id: '123' }`.
 
 :::note
-See [Route Parameters](/routing/path-parameters) for more information on route parameters.
+See [Route Parameters](/basics/routing#path-parameters) for more information on route parameters.
 :::
 
 ## `query`
@@ -114,7 +114,7 @@ app.get('/users', ({ query }) => {
 
 :::note
 The query parameters will be strings, even if they look like numbers.
-See the [Validation](/guides/validation) section to learn how
+See the [Validation](/basics/validation) section to learn how
 to transform query parameters into other types.
 :::
 
@@ -140,7 +140,7 @@ app.post('/users', ({ body }) => {
 ```
 
 :::note
-See the [Validation](/guides/validation) section to learn how
+See the [Validation](/basics/validation) section to learn how
 to validate the request body has the correct shape.
 :::
 
