@@ -28,14 +28,14 @@ app.get('/', ({ request }) => {
 
 :::note
 Unlike other web frameworks, Pulsar does not provide a custom `Request` object, nor does it
-add any properties to the `Request` object. This is because Pulsar is designed to be based
-purely on web standards.
+add/modify any properties to the `Request` object. This is because Pulsar is designed to be
+based purely on web standards.
 :::
 
-## `platform`
+## `runtime`
 
-The `platform` property of the context is a string representing the platform that the router
-is running on. Currently, the only supported platforms are:
+The `runtime` property of the context is a string representing the runtime that the router
+is running on. Currently, the only supported runtimes are:
 
 - `node`
 - `workerd` - Cloudflare Workers
@@ -43,13 +43,13 @@ is running on. Currently, the only supported platforms are:
 - `lambda` - AWS Lambda
 
 ```typescript
-app.get('/', ({ platform }) => {
+app.get('/', ({ runtime }) => {
 	// ...
 });
 ```
 
-This may be useful if your router is running on multiple platforms and you need to do
-something different depending on the platform.
+This may be useful if you run the same router code on multiple runtimes and you need to do
+something different depending on the runtime.
 
 ## `path`
 

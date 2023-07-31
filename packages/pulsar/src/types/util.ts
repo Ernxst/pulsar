@@ -1,9 +1,9 @@
 import type { AnyRouter, ExtractRoutes, Router } from '../router/types';
 
 /**
- * The platform the router is running on
+ * The runtime the router is running on
  */
-export type Platform = 'workerd' | 'vercel' | 'node' | 'lambda';
+export type Runtime = 'workerd' | 'edge-light' | 'node' | 'lambda';
 
 export type HttpMethod =
 	| 'GET'

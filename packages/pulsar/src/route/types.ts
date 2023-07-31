@@ -3,8 +3,8 @@ import type { Writable } from 'type-fest';
 import type {
 	HttpMethod,
 	Path,
-	Platform,
 	Promisable,
+	Runtime,
 	inferPathParams,
 } from '../types/util';
 
@@ -19,9 +19,9 @@ export interface RouteContext<
 	TContext extends object,
 > {
 	/**
-	 * The platform the request is running on. This is set by the adapter used.
+	 * The runtime the request is running on. This is set by the adapter used.
 	 */
-	platform: Platform;
+	runtime: Runtime;
 	/**
 	 * The (relative) path of the request (i.e., {@linkcode URL.pathname})
 	 */
