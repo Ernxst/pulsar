@@ -71,7 +71,7 @@ You can define and use path parameters in your routes like so:
 ```typescript
 app.get('/users/:id', ({ params }) => {
 	const id = params.id;
-	// ...
+	// Rest of your code...
 });
 ```
 
@@ -89,7 +89,7 @@ You can have as many path parameters as you like:
 ```typescript
 app.get('/users/:id/:name', ({ params }) => {
 	const { id, name } = params;
-	// ...
+	// Rest of your code...
 });
 ```
 
@@ -109,7 +109,7 @@ You can mark a path parameter as optional by adding a `?` after it:
 ```typescript
 app.get('/users/:id/:name?', ({ params }) => {
 	const { id, name } = params;
-	// ...
+	// Rest of your code...
 });
 ```
 
@@ -136,7 +136,7 @@ app.group('/users', (users) =>
   users
     .get('/:id', ({ params }) => {
       const { id } = params;
-      // ...
+      // Rest of your code...
     })
     .post('/', () => 'Create a user');
 });
@@ -161,7 +161,7 @@ app.group('/users', (users) =>
 	users
 		.get('/:id', ({ params }) => {
 			const { id } = params;
-			// ...
+			// Rest of your code...
 		})
 		.post('/', () => 'Create a user')
 		.get(() => 'Get all users')

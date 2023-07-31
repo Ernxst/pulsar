@@ -22,7 +22,7 @@ The `request` property of the context is simply the Web standard
 
 ```typescript
 app.get('/', ({ request }) => {
-	// ...
+	// Rest of your code...
 });
 ```
 
@@ -44,7 +44,7 @@ is running on. Currently, the only supported runtimes are:
 
 ```typescript
 app.get('/', ({ runtime }) => {
-	// ...
+	// Rest of your code...
 });
 ```
 
@@ -58,7 +58,7 @@ example, if you visit `GET /users`, then the `path` will be `/users`.
 
 ```typescript
 app.get('/', ({ path }) => {
-	// ...
+	// Rest of your code...
 });
 ```
 
@@ -68,7 +68,7 @@ values of any route parameters. For example, if you have a route like this:
 
 ```typescript
 app.get('/users/:id', ({ path }) => {
-	// ...
+	// Rest of your code...
 });
 ```
 
@@ -90,7 +90,7 @@ the route path. For example, if you have a route like this:
 
 ```typescript
 app.get('/users/:id', ({ params }) => {
-	// ...
+	// Rest of your code...
 });
 ```
 
@@ -108,7 +108,7 @@ then the `query` object will be `{ name: 'John', age: '30' }`.
 
 ```typescript
 app.get('/users', ({ query }) => {
-	// ...
+	// Rest of your code...
 });
 ```
 
@@ -135,7 +135,7 @@ In all other cases the body will be parsed as a string.
 
 ```typescript
 app.post('/users', ({ body }) => {
-	// ...
+	// Rest of your code...
 });
 ```
 
@@ -152,7 +152,7 @@ For example, you may want to store the current user in the `locals` object.
 
 ```typescript
 app.get('/users', ({ locals }) => {
-	locals.user; // ...
+	locals.user; // Rest of your code...
 });
 ```
 
