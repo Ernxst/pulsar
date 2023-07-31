@@ -16,7 +16,7 @@ const lines = dom.window.document.querySelectorAll('.ec-line');
 const tabs = Object.entries(Commands).map(([pkg, cmds]) => {
 	lines.forEach((el) => {
 		el.querySelectorAll('span').forEach((word, idx) => {
-			if (idx === 1) {
+			if (idx === 2) {
 				word.textContent =
 					word.textContent === 'create' ? cmds.create : cmds.install;
 			}
