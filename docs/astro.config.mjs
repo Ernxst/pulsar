@@ -62,12 +62,20 @@ export default defineConfig({
 					label: 'Guides',
 					items: [
 						{ label: 'Organise Files', link: '/guides/organise-files' },
+						{
+							label: 'Express Middleware',
+							link: '/guides/using-express-middleware',
+						},
 						{ label: 'Examples', link: '/guides/examples' },
 					],
 				},
 				{
 					label: 'Plugins',
-					items: [{ label: 'Pulsar Fetch', link: '/plugins/pulsar-fetch' }],
+					items: [
+						{ label: 'Pulsar Fetch', link: '/plugins/pulsar-fetch' },
+						{ label: 'Helmet', link: '/plugins/helmet' },
+						{ label: 'Sentry', link: '/plugins/sentry' },
+					],
 				},
 				{
 					label: 'Reference',
