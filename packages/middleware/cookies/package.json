@@ -58,5 +58,8 @@
 		"pulsar": {
 			"optional": false
 		}
+	},
+	"devDependencies": {
+		"pulsar": "^0.0.1"
 	}
 }

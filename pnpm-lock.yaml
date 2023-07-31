@@ -156,7 +156,7 @@ importers:
         version: 3.4.0
 
   packages/fetch:
-    dependencies:
+    devDependencies:
       pulsar:
         specifier: ^0.0.1
         version: link:../pulsar
@@ -165,13 +165,13 @@ importers:
         version: 4.0.0
 
   packages/middleware/cookies:
-    dependencies:
+    devDependencies:
       pulsar:
         specifier: ^0.0.1
         version: link:../../pulsar
 
   packages/middleware/helmet:
-    dependencies:
+    devDependencies:
       helmet:
         specifier: ^7.0.0
         version: 7.0.0
@@ -180,7 +180,7 @@ importers:
         version: link:../../pulsar
 
   packages/middleware/sentry:
-    dependencies:
+    devDependencies:
       pulsar:
         specifier: ^0.0.1
         version: link:../../pulsar
@@ -1916,7 +1916,6 @@ packages:
       '@sentry/types': 7.60.0
       '@sentry/utils': 7.60.0
       tslib: 2.6.1
-    dev: false
 
   /@sentry/integrations@7.60.0:
     resolution: {integrity: sha512-Zh/Kgvs501ABc2Qq1gscC/y2u4HDUhgzCsJ10/GdYZwIqM/UMfviHbYpzjFZssJvGUrGzjEW0GXCInCc4rYzQA==}
@@ -1926,12 +1925,10 @@ packages:
       '@sentry/utils': 7.60.0
       localforage: 1.10.0
       tslib: 2.6.1
-    dev: false
 
   /@sentry/types@7.60.0:
     resolution: {integrity: sha512-MSEuF9YjE0j+UKdqee2AzcNlMnShVNTkCB2Wnng6Bc5hHhn4fyYeTLbuFpNxL0ffN65lxblaWx6doDsMcvRxcA==}
     engines: {node: '>=8'}
-    dev: false
 
   /@sentry/utils@7.60.0:
     resolution: {integrity: sha512-Oc/PQqzeNDOSy4ZzVj6h9U+GEGRkg2PEVn9PC2V9/v3HDD20mndFqR/S2B5OOgDb/6pNGyz8XiZYI5rb29WFHA==}
@@ -1939,7 +1936,6 @@ packages:
     dependencies:
       '@sentry/types': 7.60.0
       tslib: 2.6.1
-    dev: false
 
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
@@ -4728,7 +4724,7 @@ packages:
   /helmet@7.0.0:
     resolution: {integrity: sha512-MsIgYmdBh460ZZ8cJC81q4XJknjG567wzEmv46WOBblDb6TUd3z8/GhgmsM9pn8g2B80tAJ4m5/d3Bi1KrSUBQ==}
     engines: {node: '>=16.0.0'}
-    dev: false
+    dev: true
 
   /hosted-git-info@2.8.9:
     resolution: {integrity: sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==}
@@ -4810,7 +4806,6 @@ packages:
 
   /immediate@3.0.6:
     resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
-    dev: false
 
   /import-fresh@3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
@@ -5309,7 +5304,6 @@ packages:
     resolution: {integrity: sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==}
     dependencies:
       immediate: 3.0.6
-    dev: false
 
   /lilconfig@2.1.0:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
@@ -5343,7 +5337,6 @@ packages:
     resolution: {integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==}
     dependencies:
       lie: 3.1.1
-    dev: false
 
   /locate-path@5.0.0:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
@@ -7740,7 +7733,6 @@ packages:
       '@sentry/integrations': 7.60.0
       '@sentry/types': 7.60.0
       '@sentry/utils': 7.60.0
-    dev: false
 
   /tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
@@ -7998,7 +7990,6 @@ packages:
   /type-fest@4.0.0:
     resolution: {integrity: sha512-d/oYtUnPM9zar2fqqGLYPzgcY0qUlYK0evgNVti93xpzfjGkMgZHu9Lvgrkn0rqGXTgsFRxFamzjGoD9Uo+dgw==}
     engines: {node: '>=16'}
-    dev: false
 
   /typed-array-buffer@1.0.0:
     resolution: {integrity: sha512-Y8KTSIglk9OZEr8zywiIHG/kmQ7KWyjseXs1CbSo8vC42w7hg2HgYTxSWwP0+is7bWDc1H+Fo026CpHFwm8tkw==}

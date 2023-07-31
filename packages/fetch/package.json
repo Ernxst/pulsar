@@ -64,7 +64,8 @@
 			"optional": false
 		}
 	},
-	"dependencies": {
+	"devDependencies": {
+		"pulsar": "^0.0.1",
 		"type-fest": "4.0.0"
 	}
 }

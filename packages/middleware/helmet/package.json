@@ -61,7 +61,8 @@
 			"optional": false
 		}
 	},
-	"dependencies": {
-		"helmet": "^7.0.0"
+	"devDependencies": {
+		"helmet": "^7.0.0",
+		"pulsar": "^0.0.1"
 	}
 }
