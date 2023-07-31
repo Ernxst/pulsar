@@ -1,9 +1,9 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
+title: Pulsar
+description: A dead-simple, type-safe web framework built for the edge.
 template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
+  tagline: Intuitive end-to-end type-safety without sacrificing DX.
   image:
     file: ../../assets/houston.webp
   actions:
@@ -18,19 +18,23 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+## Features
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="Familiar syntax" icon="pencil">
+		Web frameworks have been refined over the years; Pulsar builds on this to provide
+    a familiar API to minimise the learning curve.
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Type-First" icon="add-document">
+		Enjoy the DX wins of TypeScript without the hassle of manually defining types.
+    Pulsar uses TypeScript inference to provide first class support for
+    end-to-end type-safety.
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
+	<Card title="Run Anywhere" icon="setting">
+    Pulsar supports all major cloud providers and can be deployed to any
+    serverless/edge platform.
 	</Card>
 	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+		Learn more in [the Pulsar Docs](/start-here/getting-started).
 	</Card>
 </CardGrid>
