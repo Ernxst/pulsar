@@ -73,13 +73,14 @@ does nothing to prevent you from passing invalid arguments at runtime.
 :::
 
 :::tip
-If you are using plain JavaScript:
+If you are using plain JavaScript, you can use JSDoc to type the `customFetch` function:
 
 ```javascript
 import { createFetch } from '@pulsar/fetch';
 
+// Import the router itself
 /**
- * @typedef {import("my-backend-api").AppRouter} AppRouter
+ * @typedef {typeof import("my-backend-api").appRouter} AppRouter
  */
 
 /** @type {import("@pulsar/fetch").Fetch<AppRouter> } */
