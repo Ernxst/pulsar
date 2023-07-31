@@ -7,7 +7,6 @@ import remarkSmartypants from 'remark-smartypants';
 import links from 'starlight-links-validator';
 import robots from 'astro-robots-txt';
 import purgecss from 'astro-purgecss';
-import html from 'astro-html-minifier';
 import astroExpressiveCode from 'astro-expressive-code';
 import AutoImport from 'astro-auto-import';
 import glob from 'fast-glob';
@@ -130,7 +129,6 @@ export default defineConfig({
 			],
 		}),
 		purgecss(),
-		html(),
 	],
 
 	// Process images with sharp: https://docs.astro.build/en/guides/assets/#using-sharp

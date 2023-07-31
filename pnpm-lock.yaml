@@ -96,9 +96,6 @@ importers:
       astro-expressive-code:
         specifier: 0.19.0
         version: 0.19.0(astro@2.9.3)
-      astro-html-minifier:
-        specifier: 0.5.0
-        version: 0.5.0
       astro-purgecss:
         specifier: 2.3.0
         version: 2.3.0(astro@2.9.3)
@@ -1886,15 +1883,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@minify-html/node@0.11.1:
-    resolution: {integrity: sha512-f+3VvBszFaY5xx8e7POka1K1FnVZur8Apk18uaI4lSyZrzmpLlkSBZfXOPHVhChFc0TDI+RQuBD+ws4qIt9+mg==}
-    engines: {node: '>= 8.6.0'}
-    hasBin: true
-    requiresBuild: true
-    dependencies:
-      cargo-cp-artifact: 0.1.8
-    dev: true
-
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -2675,12 +2663,6 @@ packages:
       remark-expressive-code: 0.19.0
     dev: true
 
-  /astro-html-minifier@0.5.0:
-    resolution: {integrity: sha512-DpVLTGPC6TataNbVZ0WeR9YH2trgQRrIxbRpQKnrb2975LbYGKPtcKhda2kli9Gsh0aQ8kp0txE308VlEC4VIg==}
-    dependencies:
-      '@minify-html/node': 0.11.1
-    dev: true
-
   /astro-purgecss@2.3.0(astro@2.9.3):
     resolution: {integrity: sha512-HeIhTFjNupoPP7w8rQpadAmc1Y7zrUOq2jbF6z66DwZ5+bshh/jNf5pviz6JsSQrNviiIL/mLw4EyVK69krz+w==}
     peerDependencies:
@@ -3027,11 +3009,6 @@ packages:
       tslib: 2.6.1
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /cargo-cp-artifact@0.1.8:
-    resolution: {integrity: sha512-3j4DaoTrsCD1MRkTF2Soacii0Nx7UHCce0EwUf4fHnggwiE4fbmF2AbnfzayR36DF8KGadfh7M/Yfy625kgPlA==}
-    hasBin: true
     dev: true
 
   /ccount@2.0.1:
