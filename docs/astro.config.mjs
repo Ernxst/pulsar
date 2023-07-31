@@ -42,7 +42,14 @@ export default defineConfig({
 		links(),
 		sitemap(),
 		robots(),
-		astroExpressiveCode({ theme: 'min-dark' }),
+		astroExpressiveCode({
+			theme: 'github-dark',
+			styleOverrides: {
+				codeFontSize: '13.6px',
+				codeFontFamily:
+					'"IBM Plex Mono", Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace',
+			},
+		}),
 		starlight({
 			title: 'Pulsar',
 			tagline:
@@ -52,6 +59,8 @@ export default defineConfig({
 			customCss: [
 				// Relative path to your custom CSS file
 				'./src/styles/app.postcss',
+				'@fontsource/ibm-plex-mono/400.css',
+				'@fontsource/ibm-plex-mono/600.css',
 				'@fontsource/inter/400.css',
 				'@fontsource/inter/600.css',
 			],
