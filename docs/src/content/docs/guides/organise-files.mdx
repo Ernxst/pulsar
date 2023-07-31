@@ -37,7 +37,7 @@ With files
   ```js
 export default function index(app: Pulsar) {
   return app.get('/', () => {
-    return "Ok!"
+      return "Ok!"
     })
 }
 ```
@@ -57,8 +57,8 @@ export const appRouter = new Pulsar().use(index).use(users).use(posts);
 export type AppRouter = typeof appRouter;
 ```
 
-If you hover over your `appRouter`, you should be able to see that the type of these routes
-have been injected into the router.
+If you hover over your `appRouter` in your editor, you should be able to see that the type of
+these routes have been injected into the router.
 
 ##
 
