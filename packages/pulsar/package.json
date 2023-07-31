@@ -39,14 +39,24 @@
 	},
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"require": "./dist/index.cjs",
-			"import": "./dist/index.js"
+			"require": {
+				"types": "./dist/index.d.cts",
+				"require": "./dist/index.js"
+			},
+			"import": {
+				"types": "./dist/index.d.ts",
+				"import": "./dist/index.js"
+			}
 		},
 		"./internals": {
-			"types": "./dist/internals/index.d.ts",
-			"require": "./dist/internals/index.cjs",
-			"import": "./dist/internals/index.js"
+			"require": {
+				"types": "./dist/internals/index.d.cts",
+				"require": "./dist/internals/index.cjs"
+			},
+			"import": {
+				"types": "./dist/internals/index.d.ts",
+				"import": "./dist/internals/index.js"
+			}
 		}
 	},
 	"main": "dist/index.cjs",
@@ -55,10 +65,12 @@
 	"typesVersions": {
 		"*": {
 			".": [
-				"./dist/index.d.ts"
+				"./dist/index.d.ts",
+				"./dist/index.d.cts"
 			],
 			"internals": [
-				"./dist/internals/index.d.ts"
+				"./dist/internals/index.d.ts",
+				"./dist/internals/index.d.cts"
 			]
 		}
 	},
@@ -90,7 +102,7 @@
 			"optional": true
 		}
 	},
-	"dependencies": {
+	"devDependencies": {
 		"pretty-cache-header": "1.0.0",
 		"type-fest": "4.0.0"
 	}

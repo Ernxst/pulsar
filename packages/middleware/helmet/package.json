@@ -28,9 +28,14 @@
 	},
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"require": "./dist/index.cjs",
-			"import": "./dist/index.js"
+			"require": {
+				"types": "./dist/index.d.cts",
+				"require": "./dist/index.js"
+			},
+			"import": {
+				"types": "./dist/index.d.ts",
+				"import": "./dist/index.js"
+			}
 		}
 	},
 	"main": "dist/index.cjs",
@@ -39,7 +44,8 @@
 	"typesVersions": {
 		"*": {
 			".": [
-				"./dist/index.d.ts"
+				"./dist/index.d.ts",
+				"./dist/index.d.cts"
 			]
 		}
 	},
@@ -62,7 +68,7 @@
 		}
 	},
 	"devDependencies": {
-		"helmet": "^7.0.0",
+		"helmet": "7.0.0",
 		"pulsar": "^0.0.1"
 	}
 }

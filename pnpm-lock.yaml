@@ -173,7 +173,7 @@ importers:
   packages/middleware/helmet:
     devDependencies:
       helmet:
-        specifier: ^7.0.0
+        specifier: 7.0.0
         version: 7.0.0
       pulsar:
         specifier: ^0.0.1
@@ -193,15 +193,16 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20230724.0
         version: 4.20230724.0
+      zod:
+        specifier: ^3.20.2
+        version: 3.21.4
+    devDependencies:
       pretty-cache-header:
         specifier: 1.0.0
         version: 1.0.0
       type-fest:
         specifier: 4.0.0
         version: 4.0.0
-      zod:
-        specifier: ^3.20.2
-        version: 3.21.4
 
 packages:
 
@@ -6705,7 +6706,7 @@ packages:
     engines: {node: '>=12.13'}
     dependencies:
       timestring: 6.0.0
-    dev: false
+    dev: true
 
   /pretty-format@29.6.2:
     resolution: {integrity: sha512-1q0oC8eRveTg5nnBEWMXAU2qpv65Gnuf2eCQzSjxpWFkPaPARwqZZDGuNE0zPAZfTCHzIk3A8dIjwlQKKLphyg==}
@@ -7689,7 +7690,7 @@ packages:
   /timestring@6.0.0:
     resolution: {integrity: sha512-wMctrWD2HZZLuIlchlkE2dfXJh7J2KDI9Dwl+2abPYg0mswQHfOAyQW3jJg1pY5VfttSINZuKcXoB3FGypVklA==}
     engines: {node: '>=8'}
-    dev: false
+    dev: true
 
   /tinybench@2.5.0:
     resolution: {integrity: sha512-kRwSG8Zx4tjF9ZiyH4bhaebu+EDz1BOx9hOigYHlUW4xxI/wKIUQUqo018UlU4ar6ATPBsaMrdbKZ+tmPdohFA==}
@@ -7990,6 +7991,7 @@ packages:
   /type-fest@4.0.0:
     resolution: {integrity: sha512-d/oYtUnPM9zar2fqqGLYPzgcY0qUlYK0evgNVti93xpzfjGkMgZHu9Lvgrkn0rqGXTgsFRxFamzjGoD9Uo+dgw==}
     engines: {node: '>=16'}
+    dev: true
 
   /typed-array-buffer@1.0.0:
     resolution: {integrity: sha512-Y8KTSIglk9OZEr8zywiIHG/kmQ7KWyjseXs1CbSo8vC42w7hg2HgYTxSWwP0+is7bWDc1H+Fo026CpHFwm8tkw==}
