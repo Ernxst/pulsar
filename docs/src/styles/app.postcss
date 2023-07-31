@@ -1,0 +1,102 @@
+:root {
+	--sl-color-black: hsla(0, 0%, 7%);
+	--sl-color-accent-high: rgb(85, 215, 153);
+	--sl-color-bg-nav: var(--sl-color-black);
+	--sl-color-bg-sidebar: var(--sl-color-bg-nav);
+	--sl-color-hairline: rgba(229, 231, 235, 0.27);
+	--sl-color-hairline-shade: rgba(229, 231, 235, 0.27);
+
+	--sl-nav-height: 4rem;
+	--sl-sidebar-width: 16rem;
+	--sl-content-width: 90ch;
+
+	--sl-font: 'Inter', serif;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+}
+
+:root[data-theme='light'],
+[data-theme='light'] ::backdrop {
+	--sl-color-accent-high: rgb(85, 215, 153);
+}
+
+.content .anchor-link {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-left: 0.5rem;
+}
+
+.content > h2 {
+	margin-top: 2.5rem;
+	margin-bottom: 1rem;
+}
+
+.right-sidebar,
+.divider,
+header > .header site-search > button[data-open-modal] {
+	border-color: var(--sl-color-hairline);
+}
+
+.right-sidebar-panel starlight-toc > nav > h2 {
+	letter-spacing: -0.015em;
+	font-weight: 600;
+	font-size: 14px;
+	text-transform: capitalize;
+	margin-bottom: 1rem;
+}
+
+starlight-toc > nav > ul li {
+	margin-top: 0.25rem;
+	margin-bottom: 0.25rem;
+}
+
+starlight-toc > nav > ul > li {
+	font-weight: 600;
+}
+
+[aria-current='page'],
+starlight-toc > nav > ul li a {
+	padding-top: 0.375rem;
+	padding-bottom: 0.375rem;
+}
+
+[aria-current='page'] {
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+}
+
+.sidebar > ul {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.sidebar > ul li ul li {
+	height: 100%;
+}
+
+.sidebar > ul li ul li:first-child a {
+	margin-top: 1rem;
+}
+
+.sidebar > ul li ul a {
+	margin-bottom: 0.67rem;
+}
+
+.sidebar > ul li ul li:last-child a {
+	margin-bottom: 0;
+}
+
+dialog {
+	background: var(--sl-color-bg-sidebar);
+	border-color: var(--sl-color-hairline);
+}
