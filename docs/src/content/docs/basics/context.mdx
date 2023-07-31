@@ -270,13 +270,18 @@ If you return an object from a route handler, it will automatically be sent as J
 
 The `html` method of the context is a convenience method for sending an HTML response.
 It takes one argument - the HTML to send and will set the `Content-Type` header to
-`text/html`.
+`text/html; charset=utf8`.
 
 ```typescript
 app.get('/users', ({ html }) => {
 	html('<h1>Hello World</h1>');
 });
 ```
+
+:::tip
+If the returned string starts with `<!DOCTYPE HTML>` or `<html>`, it will automatically
+be sent as HTML.
+:::
 
 ### `text`
 
