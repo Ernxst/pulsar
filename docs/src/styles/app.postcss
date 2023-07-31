@@ -8,9 +8,35 @@
 
 	--sl-nav-height: 4rem;
 	--sl-sidebar-width: 16rem;
-	--sl-content-width: 90ch;
+	--sl-content-width: 80ch;
 
 	--sl-font: 'Inter', serif;
+}
+
+@media (min-width: 768px) {
+	:root {
+		--sl-content-width: 90ch;
+	}
+}
+
+@media (min-width: 1024px) {
+	:root {
+		--sl-content-width: 100ch;
+		--sl-sidebar-width: 18rem;
+	}
+}
+
+@media (min-width: 1280px) {
+	:root {
+		--sl-content-width: 110ch;
+	}
+}
+
+@media (min-width: 1536px) {
+	:root {
+		--sl-sidebar-width: 19rem;
+		--sl-content-width: 130ch;
+	}
 }
 
 html {
