@@ -241,6 +241,10 @@ app.get('/users', ({ headers }) => {
 
 	// Sets the Content-Type header to application/json
 	headers('Content-Type', 'application/json');
+
+  // Remove the Content-Type header
+  headers('Content-Type', undefined);
+  headers('Content-Type', null);
 });
 ```
 
