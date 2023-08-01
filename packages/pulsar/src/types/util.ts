@@ -33,8 +33,9 @@ export type inferRoutes<TRouter extends AnyRouter> = {
 		: ExtractRoutes<TRouter>[K];
 };
 
-export type inferRouterContext<TRouter extends AnyRouter> =
-	TRouter['_']['context'];
+export type inferRouterContext<TRouter extends AnyRouter> = {
+	[K in keyof TRouter['_']['context']]: TRouter['_']['context'][K];
+} & {};
 
 export type inferErrorShape<TRouter extends AnyRouter> =
 	TRouter['_']['errorShape'];
