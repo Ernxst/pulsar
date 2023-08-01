@@ -11,9 +11,8 @@ export type HttpMethod =
 	| 'PUT'
 	| 'PATCH'
 	| 'DELETE'
-	| 'HEAD'
 	| 'OPTIONS'
-	| 'TRACE';
+	| 'ALL';
 
 export type Promisable<T> = T | Promise<T>;
 

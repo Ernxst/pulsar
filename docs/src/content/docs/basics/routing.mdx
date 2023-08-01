@@ -5,8 +5,8 @@ description: A guide in my new Starlight docs site.
 
 **Routes** are the building blocks of your API. A route is simply a function, accessed via
 a URL path, that takes a request and returns a response. Each route is associated with a
-specific HTTP method. The supported methods are `GET`, `POST`, `PUT`, `PATCH`, `DELETE`,
-`HEAD`, `TRACE` and `OPTIONS`.
+specific HTTP method. The supported methods are `ALL`, `GET`, `POST`, `PUT`, `PATCH`, `DELETE`,
+`HEAD` and `OPTIONS`. `ALL` is a special method that matches all HTTP methods.
 
 If you've ever used a framework like Express, you'll be familiar with the concept of routes.
 
@@ -33,13 +33,13 @@ You define multiple routes by chaining them together:
 
 ```typescript
 app
+	.all('/ping', () => 'Hello, world!')
 	.get('/ping', () => 'Hello, world!')
 	.post('/ping', () => 'Hello, world!')
 	.put('/ping', () => 'Hello, world!')
 	.patch('/ping', () => 'Hello, world!')
 	.delete('/ping', () => 'Hello, world!')
 	.head('/ping', () => 'Hello, world!')
-	.trace('/ping', () => 'Hello, world!')
 	.options('/ping', () => 'Hello, world!');
 ```
 
