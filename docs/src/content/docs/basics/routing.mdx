@@ -123,6 +123,27 @@ A `GET` request to `/users/123/John` will also match the `/users/:id/:name?` rou
 Again, take caution when using optional path parameters to avoid clashes with other routes.
 :::
 
+### Wildcards
+
+You can use a wildcard (`*`) to match any path:
+
+```typescript
+app.get('/users/*', () => 'Hello, world!');
+```
+
+Now, a `GET` request to `/users/123` will match the `/users/*` route and the
+`*` parameter will be set to `123`. A get request to `/users/123/John` will also match
+the `/users/*` route and the `*` parameter will be set to `123/John`.
+
+The difference between this and optional path parameters is that the wildcard will match
+any path until the end of the URL, whereas optional path parameters will only match until
+the next segment of the URL.
+
+:::caution[Important]
+Take caution when using wildcards to avoid clashes with other routes. This is especially
+important when using the `ALL` method.
+:::
+
 ## Grouping Routes
 
 Some routes make sense to group together. For example, you might have a set of routes that

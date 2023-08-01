@@ -36,6 +36,7 @@ describe('When matching routes', () => {
 				{ path: '/users/:id/:name', match: '/users/123/abc' },
 				{ path: '/users/:id/:name?', match: '/users/123' },
 				{ path: '/users/:id/:name?', match: '/users/123/abc' },
+				{ path: '/wild/*/card', match: '/wild/123/card' },
 			] as const)('given a $path path', ({ path, match }) => {
 				const handler = vi.fn().mockResolvedValue({ message: 'hello' });
 
