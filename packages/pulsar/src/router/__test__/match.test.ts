@@ -9,6 +9,38 @@ function request(method: string, url: string) {
 }
 
 describe('When matching routes', () => {
+	let router: Pulsar;
+
+	beforeEach(() => {
+		router = new Pulsar();
+	});
+
+	describe('with route clashes', () => {
+		describe.each([
+			{ clashes: ['/healthcheck', '/healthcheck'] },
+			{ clashes: ['/healthcheck', '/:id'] },
+			{ clashes: ['/healthcheck', '/:id/:name?'] },
+		] as const)('given clashes $clashes', ({ clashes }) => {
+			const handler1 = vi.fn().mockResolvedValue({ message: 'hello' });
+			const handler2 = vi.fn().mockResolvedValue({ message: 'world' });
+
+			beforeEach(() => {
+				router.get(clashes[0], handler1);
+				router.get(clashes[1], handler2);
+			});
+
+			test('should throw an error', async () => {
+				const req = request('GET', clashes[0]);
+				expect(() => router.fetch(req)).rejects.toThrowError(
+					'You have conflicts for path GET /healthcheck'
+				);
+
+				expect(handler1).not.toHaveBeenCalled();
+				expect(handler2).not.toHaveBeenCalled();
+			});
+		});
+	});
+
 	describe.each([
 		{ method: 'GET' },
 		{ method: 'POST' },
@@ -19,12 +51,6 @@ describe('When matching routes', () => {
 	] satisfies { method: HttpMethod }[])(
 		'given a $method route',
 		({ method }) => {
-			let router: Pulsar;
-
-			beforeEach(() => {
-				router = new Pulsar();
-			});
-
 			describe.each([
 				{ path: '/healthcheck', match: '/healthcheck' },
 				{ path: '/oauth/callback', match: '/oauth/callback' },
