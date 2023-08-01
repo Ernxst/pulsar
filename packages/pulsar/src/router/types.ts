@@ -2,10 +2,12 @@ import type { ZodObject, ZodType, z } from 'zod';
 import type { ErrorHandler } from '../errors/types';
 import type { Middleware } from '../middleware/types';
 import type { AnyRoute, Route, RouteContext } from '../route/types';
-import type { HttpMethod, Path, Promisable } from '../types/util';
+import type { HttpMethod, Path, Promisable, inferRoutes } from '../types/util';
 
 export type QuerySchema = Record<string, ZodType>;
 export type BodySchema = Record<string, ZodType>;
+export type inferQuery<TQuery extends QuerySchema> = z.infer<ZodObject<TQuery>>;
+export type inferBody<TBody extends BodySchema> = z.infer<ZodObject<TBody>>;
 export type EmptyRoutes = Record<Path, never>;
 
 export type ExtractRoutes<TRouter extends AnyRouter> =
@@ -231,6 +233,10 @@ export type Router<
 			) => TRouter
 		): Router<TGroup, TRoutes & ExtractRoutes<TRouter>, TContext, TErrShape>;
 	};
+
+	// @ts-expect-error how does this not satisfy AnyRouter
+	getRoutes(): inferRoutes<Router<TGroup, TRoutes, TContext, TErrShape>>;
+	fetch(request: Request): Promise<Response>;
 };
 
 export type AnyRouter = Router<any, any, any, any>;
