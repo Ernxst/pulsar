@@ -7,4 +7,5 @@ export default defineConfig({
 		'internals/index': 'src/internals.ts',
 	},
 	sourcemap: true,
+	splitting: false,
 });

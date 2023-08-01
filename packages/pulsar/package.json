@@ -82,7 +82,7 @@
 	},
 	"scripts": {
 		"------------------------------------------------------------------------------": "",
-		"build": "tsup --dts",
+		"build": "tsup --dts --clean",
 		"postbuild": "publint",
 		"-------------------------------------------------------------------------------": "",
 		"typecheck": "tsc --noEmit",
@@ -103,6 +103,8 @@
 		}
 	},
 	"devDependencies": {
+		"fast-querystring": "1.1.2",
+		"hono": "3.3.4",
 		"pretty-cache-header": "1.0.0",
 		"type-fest": "4.0.0"
 	}
