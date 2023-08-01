@@ -11,10 +11,13 @@ import type {
 export type RedirectStatus = 301 | 302 | 303 | 307 | 308;
 
 export type CacheOptions = Parameters<typeof cacheHeader>[0];
+export type QueryParams =
+	| Record<string, string>
+	| Record<string, string | undefined>;
 
 export interface RouteContext<
 	TPath extends Path,
-	TQuery extends Record<string, string> | Record<string, string | undefined>,
+	TQuery extends QueryParams,
 	TBody extends object,
 	TContext extends object,
 > {
@@ -111,7 +114,7 @@ export interface RouteContext<
 export interface Route<
 	TPath extends Path,
 	TMethod extends HttpMethod,
-	TQuery extends Record<string, string>,
+	TQuery extends QueryParams,
 	TBody extends object,
 	TOut,
 > {
