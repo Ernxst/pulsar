@@ -7,6 +7,7 @@ export default defineConfig({
 		typecheck: {
 			ignoreSourceErrors: true,
 		},
+		mockReset: true,
 		coverage: {
 			provider: 'istanbul',
 			enabled: true,
