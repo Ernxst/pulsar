@@ -1,20 +1,54 @@
+import { type PulsarError } from 'src';
 import type { QueryParams, RouteContext } from '../route/types';
-import type { Path, Promisable } from '../types/util';
+import type { Path } from '../types/util';
+
+export type inferMiddlewareInput<TMiddleware extends Middleware<any, any>> =
+	TMiddleware extends Middleware<infer TContext, any> ? TContext : never;
+
+export type inferMiddlewareOutput<TMiddleware extends Middleware<any, any>> =
+	TMiddleware extends (
+		...args: infer _
+	) => Promise<MiddlewareResult<infer TContext>>
+		? TContext
+		: TMiddleware extends Middleware<any, infer TContext>
+		? TContext
+		: never;
+
+export interface NextFunction<TNewContext extends object = {}> {
+	/**
+	 * Call the request's handler and obtain the result
+	 *
+	 * You must return the result of this function from your middleware handler.
+	 */
+	(): Promise<MiddlewareResult<{}>>;
+	/**
+	 * Call the request's handler and obtain the result.
+	 *
+	 * As the parameter to `context`, it is possible to only pass in new parameters
+	 * and properties that have changed, instead of repeating the entire
+	 * context object.
+	 *
+	 * You must return the result of this function from your middleware handler.
+	 */
+	<TCtx extends TNewContext>(context: TCtx): Promise<MiddlewareResult<TCtx>>;
+}
+
+export type MiddlewareResult<
+	_PlaceholderForUpdatedContext extends object = {},
+> = { ok: true; data: unknown } | { ok: false; error: PulsarError };
 
 /**
  * The context object passed to middleware handlers.
  */
-export interface MiddlewareContext<TLocals extends object = {}>
-	extends RouteContext<Path, QueryParams, object, TLocals> {
+export interface MiddlewareContext<
+	TLocals extends object = {},
+	TNewContext extends object = {},
+> extends RouteContext<Path, QueryParams, object, TLocals> {
 	/**
-	 * Call next middleware, or route handler if there is no more middleware.
-	 *
-	 * This is useful for middleware that needs to do something after the
-	 * route handler has finished.
-	 *
-	 * @returns A promise resolving to the response payload.
+	 * Call the request's handler and obtain the result.
+	 * You must return the result of this function from your middleware handler.
 	 */
-	next(): Promise<unknown>;
+	next: NextFunction<TNewContext>;
 }
 
 /**
@@ -24,7 +58,7 @@ export interface MiddlewareContext<TLocals extends object = {}>
  */
 export type Middleware<
 	TLocals extends object = {},
-	TNewContext extends object = TLocals,
+	TNewContext extends object = {},
 > =
 	/**
 	 * Run middleware, returning a new context object. This allows middleware to
@@ -32,17 +66,10 @@ export type Middleware<
 	 *
 	 * @param context A clone of the context object. Modifying this object has
 	 * no effect.
-	 * @returns A new context object.
 	 */
-	| ((context: MiddlewareContext<TLocals>) => Promisable<TNewContext>)
-	/**
-	 * Run middleware, without returning a value, meaning the context will not
-	 * be modified.
-	 *
-	 * @param context A clone of the context object. Modifying this object has no
-	 * effect.
-	 */
-	| ((context: MiddlewareContext<TLocals>) => Promisable<void>);
+	(
+		context: MiddlewareContext<TLocals>
+	) => Promise<MiddlewareResult<TNewContext> | void>;
 
 /**
  * Middleware builder is used to build middleware pipelines.
@@ -55,14 +82,17 @@ export interface MiddlewareBuilder<
 	 * Apply middleware before this one. This is useful for building middleware
 	 * pipelines.
 	 */
-	use<TMiddlewareIn extends object, TMiddlewareOut extends object>(
-		middleware: Middleware<TMiddlewareIn, TMiddlewareOut>
-	): MiddlewareBuilder<TIn & TMiddlewareIn, TOut & TMiddlewareOut>;
+	use<TMiddleware extends Middleware<any, any>>(
+		middleware: TMiddleware
+	): MiddlewareBuilder<
+		TIn & inferMiddlewareInput<TMiddleware>,
+		TOut & inferMiddlewareOutput<TMiddleware>
+	>;
 
 	/**
 	 * Define the middleware handler.
 	 */
-	define<TNewContext extends object>(
-		middleware: Middleware<TIn & TOut, TNewContext>
-	): Middleware<TIn, TNewContext>;
+	define<TMiddleware extends Middleware<TIn & TOut, any>>(
+		middleware: TMiddleware
+	): Middleware<TIn, inferMiddlewareOutput<TMiddleware>>;
 }

@@ -43,5 +43,6 @@ function promisify(context: Context, options: HelmetOptions) {
 export function helmet(options: HelmetOptions = {}) {
 	return middleware().define((ctx) => {
 		promisify(ctx, options);
+		return ctx.next();
 	});
 }

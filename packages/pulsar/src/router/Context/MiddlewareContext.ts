@@ -1,4 +1,5 @@
-import type { MiddlewareContext as IMiddlewareContext, Path } from 'src';
+import type { MiddlewareContext as IMiddlewareContext } from 'src/middleware/types';
+import type { Path } from 'src/types/util';
 import type { QuerySchema, inferQuery } from '../types';
 import { Context } from '.';
 
@@ -13,8 +14,11 @@ export class MiddlewareContext<
 	extends Context<TPath, inferQuery<TQuery>, TBody, TContext>
 	implements IMiddlewareContext<TContext>
 {
-	async next() {
-		// TODO: implement
-		throw new Error('Not implemented');
-	}
+	// @ts-expect-error TODO: fix
+	public next: IMiddlewareContext<TContext>['next'] = async () => {
+		return {
+			ok: true,
+			data: {},
+		};
+	};
 }

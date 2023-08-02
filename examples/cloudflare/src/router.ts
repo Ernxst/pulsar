@@ -9,7 +9,7 @@ export const appRouter = new Pulsar()
 	.use(sentry({ dsn: '<SENTRY_DSN>' }))
 	.use(helmet())
 	// Custom middleware, injects a version into the route context
-	.use(() => ({ version: 'v1' }))
+	.use(({ next }) => next({ version: 'v1' }))
 	// Merge routes into the router
 	.route(users)
 	// Error handler, including 404

@@ -7,7 +7,14 @@ export {
 export type { ErrorCode, ErrorContext, ErrorHandler } from './errors/types';
 
 export { middleware } from './middleware';
-export type { Middleware, MiddlewareContext } from './middleware/types';
+export type {
+	Middleware,
+	MiddlewareContext,
+	MiddlewareResult,
+	NextFunction,
+	inferMiddlewareInput,
+	inferMiddlewareOutput,
+} from './middleware/types';
 
 export type {
 	AnyRoute,

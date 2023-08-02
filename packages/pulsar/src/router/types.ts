@@ -1,6 +1,6 @@
 import type { ZodObject, ZodType, z } from 'zod';
 import type { ErrorHandler } from '../errors/types';
-import type { Middleware } from '../middleware/types';
+import type { Middleware, inferMiddlewareOutput } from '../middleware/types';
 import type { Route, RouteContext } from '../route/types';
 import type { HttpMethod, Path, Promisable } from '../types/util';
 import type { RouteTree } from './Pulsar/types';
@@ -183,17 +183,27 @@ export type Router<
 		 * added to the {@linkcode RouteContext["locals"]} object
 		 * available to all routes within the router group.
 		 */
-		<const TNewContext extends object = TContext>(
-			middleware: Middleware<TContext, TNewContext>
-		): Pulsar<TGroup, TRoutes, TContext & TNewContext, TErrShape>;
+		<TMiddleware extends Middleware<TContext, any>>(
+			middleware: TMiddleware
+		): Pulsar<
+			TGroup,
+			TRoutes,
+			TContext & inferMiddlewareOutput<TMiddleware>,
+			TErrShape
+		>;
 
 		/**
 		 * Specify middleware to run on all routes that match the given path.
 		 */
-		<const TNewContext extends object = TContext>(
+		<TMiddleware extends Middleware<TContext, any>>(
 			path: Path,
-			middleware: Middleware<TContext, TNewContext>
-		): Pulsar<TGroup, TRoutes, TContext, TErrShape>;
+			middleware: TMiddleware
+		): Pulsar<
+			TGroup,
+			TRoutes,
+			TContext & inferMiddlewareOutput<TMiddleware>,
+			TErrShape
+		>;
 	};
 
 	route: {

@@ -38,7 +38,7 @@ export { parse, serialise } from './utils';
  * @returns Middleware that adds cookie support to the context object.
  */
 export function cookies() {
-	return middleware().define(() => {
-		return {} as CookieContext;
+	return middleware().define(({ next }) => {
+		return next<CookieContext>({} as CookieContext);
 	});
 }

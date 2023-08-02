@@ -4,9 +4,9 @@ import type { Session } from './types';
 /**
  * Middleware to inject a {@linkcode Session} into the route context
  */
-export const session = middleware().define(async () => {
+export const session = middleware().define(async ({ next }) => {
 	// Get session from request
-	return { session: null as Session | null };
+	return next({ session: null as Session | null });
 });
 
 /**
@@ -16,7 +16,7 @@ export const session = middleware().define(async () => {
  */
 export const requiresAuth = middleware()
 	.use(session)
-	.define(async ({ locals }) => {
+	.define(async ({ locals, next }) => {
 		const { session } = locals;
 
 		if (!session) {
@@ -28,5 +28,5 @@ export const requiresAuth = middleware()
 		}
 
 		// Only return what's changed - this will be merged into the existing locals
-		return { session };
+		return next({ session });
 	});
