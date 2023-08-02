@@ -22,6 +22,7 @@ module.exports = {
 		curly: 'off',
 		'jsonc/indent': ['error', 'tab', {}],
 		'n/prefer-global/process': ['error', 'always'],
+		'n/handle-callback-err': 'off',
 		'no-only-tests/no-only-tests': 'off',
 		'unused-imports/no-unused-vars': 'off',
 		'no-tabs': 'off',
