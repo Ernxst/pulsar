@@ -20,7 +20,7 @@ import {
 	ValidationErrorContext,
 } from '../Context/ErrorContext';
 import type { AnyContext, RouteResult } from '../Context';
-import { extractArgs } from './schemas';
+import { extractArgs } from './utils';
 import type { Options, RouteHandler, RouteTree } from './types';
 
 export class $Pulsar<
