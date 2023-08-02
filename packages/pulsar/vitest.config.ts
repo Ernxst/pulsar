@@ -1,6 +1,8 @@
 import { defineConfig } from 'vitest/config';
+import paths from 'vite-tsconfig-paths';
 
 export default defineConfig({
+	plugins: [paths()],
 	// https://github.com/vitest-dev/vitest
 	test: {
 		watch: false,
