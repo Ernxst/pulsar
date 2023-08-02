@@ -30,7 +30,9 @@ export interface NextFunction<TNewContext extends object = {}> {
 	 *
 	 * You must return the result of this function from your middleware handler.
 	 */
-	<TCtx extends TNewContext>(context: TCtx): Promise<MiddlewareResult<TCtx>>;
+	<const TCtx extends TNewContext>(
+		context: TCtx
+	): Promise<MiddlewareResult<TCtx>>;
 }
 
 export type MiddlewareResult<
