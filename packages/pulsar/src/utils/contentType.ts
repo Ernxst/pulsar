@@ -4,12 +4,15 @@ export function inferContentType(input: any) {
 
 		if (lower.startsWith('<!doctype html>') || lower.startsWith('<html')) {
 			return 'text/html; charset=utf-8';
-		}
-
-		if (lower.startsWith('<?xml')) {
+		} else if (lower.startsWith('<?xml')) {
 			return 'application/xml';
+		} else if (lower.includes('<rss') || lower.includes('<feed')) {
+			return 'application/rss+xml';
+		} else if (lower.includes('<atom')) {
+			return 'application/atom+xml';
+		} else if (lower.includes('<svg')) {
+			return 'image/svg+xml';
 		}
-
 		return 'text/plain';
 	} else if (typeof input === 'number') {
 		return 'application/json; charset=utf-8';
