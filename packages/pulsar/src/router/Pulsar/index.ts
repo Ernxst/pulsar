@@ -150,8 +150,15 @@ export class $Pulsar<
 		error: unknown,
 		context: AnyContext
 	): Promise<RouteResult> {
-		const pulsarError =
-			error instanceof PulsarError ? error : new InternalServerError(error);
+		let pulsarError;
+
+		if (error instanceof PulsarError) {
+			pulsarError = error;
+		} else {
+			console.error(error);
+			pulsarError = new InternalServerError(error);
+		}
+
 		const errorContext = this.#getErrorContextFromError(pulsarError, context);
 
 		if (this.#config.errorHandler) {
