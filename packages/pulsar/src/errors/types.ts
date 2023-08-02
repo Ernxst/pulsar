@@ -1,4 +1,4 @@
-import type { RouteContext } from '../route/types';
+import type { QueryParams, RouteContext } from '../route/types';
 import type { Path, Promisable } from '../types/util';
 import type { ValidationError } from '.';
 
@@ -19,41 +19,36 @@ export type ErrorCode =
 	| 'INTERNAL_SERVER_ERROR'
 	| 'UNKNOWN';
 
-export type ErrorContext<TLocals extends object = {}> = (
-	| NotFoundContext
-	| ValidationErrorContext
-	| InternalServerErrorContext
-	| UnknownErrorContext
-) &
-	Omit<
-		RouteContext<
-			Path,
-			Record<string, string | undefined>,
-			Record<string, unknown>,
-			TLocals
-		>,
-		'path'
-	> & {
-		request: Request;
-	};
+export type ErrorContext<TContext extends object = {}> =
+	| NotFoundContext<TContext>
+	| ValidationErrorContext<TContext>
+	| InternalServerErrorContext<TContext>
+	| UnknownErrorContext<TContext>;
 
-export interface NotFoundContext {
-	code: 'NOT_FOUND';
+type BaseErrorContext<
+	TCode extends ErrorCode,
+	TLocals extends object = {},
+> = Omit<RouteContext<Path, QueryParams, object, TLocals>, 'path'> & {
+	code: TCode;
+};
+
+export interface NotFoundContext<TLocals extends object = {}>
+	extends BaseErrorContext<'NOT_FOUND', TLocals> {
 	path: URL;
 }
 
-export interface ValidationErrorContext {
-	code: 'VALIDATION';
+export interface ValidationErrorContext<TLocals extends object = {}>
+	extends BaseErrorContext<'VALIDATION', TLocals> {
 	error: ValidationError;
 	input: unknown;
 }
 
-export interface InternalServerErrorContext {
-	code: 'INTERNAL_SERVER_ERROR';
+export interface InternalServerErrorContext<TLocals extends object = {}>
+	extends BaseErrorContext<'INTERNAL_SERVER_ERROR', TLocals> {
 	error: Error;
 }
 
-export interface UnknownErrorContext {
-	code: 'UNKNOWN';
+export interface UnknownErrorContext<TLocals extends object = {}>
+	extends BaseErrorContext<'UNKNOWN', TLocals> {
 	error: Error;
 }
