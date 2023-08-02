@@ -1,4 +1,3 @@
-import qs from 'fast-querystring';
 import { cacheHeader } from 'pretty-cache-header';
 import type {
 	Path,
@@ -9,6 +8,7 @@ import type {
 } from 'src';
 import { ContentTypes, inferContentType } from 'src/utils/contentType';
 import { z } from 'zod';
+import { getQueryParams } from 'hono/utils/url';
 import type { inferQuery } from '../types';
 
 export interface RouteResult<TPayload extends object = any> {
@@ -125,8 +125,7 @@ export class Context<
 	}
 
 	public get query(): inferQuery<TQuery> {
-		const url = this.request.url;
-		const queryParams = qs.parse(url);
+		const queryParams = getQueryParams(this.request.url);
 
 		return this.#querySchema
 			? this.#querySchema.parse(queryParams)
