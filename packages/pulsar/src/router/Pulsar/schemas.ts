@@ -1,49 +1,43 @@
-import type { Path } from 'src';
-import { z } from 'zod';
+import type { Path, QuerySchema } from 'src';
 
-const endpoint = z
-	.string()
-	.min(1)
-	.startsWith('/', { message: 'must start with /' });
+interface Validators {
+	query?: QuerySchema;
+	body?: QuerySchema;
+}
 
-const pathDefn = z.union([z.literal(''), endpoint]);
+type Handler = (...args: any) => any;
 
-const schemaDefn = z.object({
-	query: z.record(z.string(), z.any()).optional(),
-	body: z.record(z.string(), z.any()).optional(),
-});
+type Args =
+	| [Handler]
+	| [Path, Handler]
+	| [Validators, Handler]
+	| [Path, Validators, Handler];
 
-const handlerDefn = z.function();
+export function extractArgs(...args: any[]) {
+	const [first, second, third] = args as Args;
 
-const PATH_SCHEMA_AND_HANDLER = z.tuple([pathDefn, schemaDefn, handlerDefn]);
-const PATH_AND_HANDLER = z.tuple([pathDefn, handlerDefn]);
-const SCHEMA_AND_HANDLER = z.tuple([schemaDefn, handlerDefn]);
-const HANDLER_ONLY = z.tuple([handlerDefn]);
+	if (typeof first === 'string') {
+		if (typeof second === 'function') {
+			return { path: first, schemas: {}, handler: second };
+		}
 
-// TODO: Using zod may be slow
-export function extractArgs(...args: any) {
-	const isPathSchemaAndHandler = PATH_SCHEMA_AND_HANDLER.safeParse(args);
-	if (isPathSchemaAndHandler.success) {
-		const [path, schemas, handler] = isPathSchemaAndHandler.data;
-		return { path: path as Path, schemas, handler };
+		if (typeof second === 'object' && typeof third === 'function') {
+			return { path: first, schemas: second, handler: third };
+		}
+
+		throw new Error('Invalid args');
 	}
 
-	const isPathAndHandler = PATH_AND_HANDLER.safeParse(args);
-	if (isPathAndHandler.success) {
-		const [path, handler] = isPathAndHandler.data;
-		return { path: path as Path, schemas: {}, handler };
+	if (typeof first === 'function') {
+		return { path: '' as const, schemas: {}, handler: first };
 	}
 
-	const isSchemaAndHandler = SCHEMA_AND_HANDLER.safeParse(args);
-	if (isSchemaAndHandler.success) {
-		const [schemas, handler] = isSchemaAndHandler.data;
-		return { path: '' as Path, schemas, handler };
-	}
+	if (typeof first === 'object') {
+		if (typeof second === 'function') {
+			return { path: '' as const, schemas: first, handler: second };
+		}
 
-	const isHandlerOnly = HANDLER_ONLY.safeParse(args);
-	if (isHandlerOnly.success) {
-		const [handler] = isHandlerOnly.data;
-		return { path: '' as Path, schemas: {}, handler };
+		throw new Error('Invalid args');
 	}
 
 	throw new Error('Invalid args');
