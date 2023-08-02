@@ -2,6 +2,8 @@ import type { MiddlewareContext as IMiddlewareContext, Path } from 'src';
 import type { QuerySchema, inferQuery } from '../types';
 import { Context } from '.';
 
+export type AnyMiddlewareContext = MiddlewareContext<any>;
+
 export class MiddlewareContext<
 		TPath extends Path = '',
 		TQuery extends QuerySchema = {},

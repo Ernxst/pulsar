@@ -12,8 +12,11 @@ import {
 import { SmartRouter } from 'hono/router/smart-router';
 import { RegExpRouter } from 'hono/router/reg-exp-router';
 import { TrieRouter } from 'hono/router/trie-router';
-import type { EmptyRoutes, Router } from '../types';
-import { MiddlewareContext } from '../Context/MiddlewareContext';
+import type { EmptyRoutes, QuerySchema, Router } from '../types';
+import {
+	type AnyMiddlewareContext,
+	MiddlewareContext,
+} from '../Context/MiddlewareContext';
 import {
 	InternalServerErrorContext,
 	NotFoundErrorContext,
@@ -71,11 +74,11 @@ export class $Pulsar<
 		return input;
 	}
 
-	async #applyMiddleware<TPath extends Path>(
-		ctx: MiddlewareContext<TPath>,
-		options: { path: TPath; parseInput: boolean; bodySchema?: AnyZodObject }
+	async #applyMiddleware<Ctx extends AnyMiddlewareContext>(
+		ctx: Ctx,
+		options: { parseInput: boolean; bodySchema: AnyZodObject | undefined }
 	) {
-		const { path, bodySchema, parseInput } = options;
+		const { bodySchema, parseInput } = options;
 
 		// Parse request body
 		const rawBody = await parseBody(ctx.request);
@@ -87,7 +90,7 @@ export class $Pulsar<
 
 		// Compile middleware into single function
 		const allMiddleware = this.#config.middleware['*'] || [];
-		allMiddleware.push(...(this.#config.middleware[path] || []));
+		allMiddleware.push(...(this.#config.middleware[ctx.path] || []));
 		const middleware = compile(allMiddleware);
 
 		// Run middleware and retrieve updated context
@@ -97,12 +100,26 @@ export class $Pulsar<
 		return ctx;
 	}
 
-	async #runHandler<Ctx extends AnyContext, const TReturn>(
-		rawContext: Ctx,
-		transformContextPromise: Promise<Ctx>,
-		callback: (ctx: Ctx) => Promisable<TReturn>
+	async #runHandler<Ctx extends AnyMiddlewareContext, const TReturn>(
+		callback: (ctx: Ctx) => Promisable<TReturn>,
+		options: Pick<Ctx, 'request' | 'params' | 'path'> & {
+			schemas: { query?: QuerySchema; body?: AnyZodObject };
+			parseInput: boolean;
+		}
 	) {
-		const [error, handlerContext] = await asyncify(transformContextPromise);
+		const { schemas, ...opts } = options;
+		const rawContext = new MiddlewareContext({
+			runtime: this.#runtime,
+			query: schemas.query,
+			...opts,
+		}) as Ctx;
+
+		const promise = this.#applyMiddleware(rawContext, {
+			...options,
+			bodySchema: schemas.body,
+		});
+
+		const [error, handlerContext] = await asyncify(promise);
 		if (error) return this.#handleError(error, rawContext);
 
 		const handleRequest = async () => await callback(handlerContext);
@@ -163,51 +180,21 @@ export class $Pulsar<
 		return { status, statusText: routeResult.statusText, headers, payload };
 	}
 
-	async #handleNotFound(request: Request): Promise<RouteResult> {
-		const rawContext = new MiddlewareContext({
-			runtime: this.#runtime,
-			request,
-			path: '',
-			params: {},
-		});
-
-		const contextPromise = this.#applyMiddleware(rawContext, {
-			path: '',
-			parseInput: false,
-		});
-
-		return this.#runHandler(rawContext, contextPromise, () => {
-			const pathname = new URL(request.url).pathname;
-			throw new NotFoundError(pathname);
-		});
-	}
-
 	#createRouteBuilder<TMethod extends HttpMethod>(method: TMethod) {
 		return (...args: any) => {
 			const { path, schemas, handler } = extractArgs(...args);
 
 			const fullPath = `${this.#config.baseUrl}${path}` as Path;
-			this.#config.middleware[fullPath] ??= [];
-
-			const { body, query } = schemas;
-			const bodySchema = body ? z.object(body) : undefined;
+			const bodySchema = schemas.body ? z.object(schemas.body) : undefined;
 
 			this.#router.add(method, fullPath, async (request, params) => {
-				const rawContext = new MiddlewareContext({
-					runtime: this.#runtime,
+				return this.#runHandler(handler, {
 					request,
 					params,
-					path: fullPath,
-					query,
-				});
-
-				const contextPromise = this.#applyMiddleware(rawContext, {
-					bodySchema,
-					path: fullPath,
+					path,
+					schemas: { query: schemas.query, body: bodySchema },
 					parseInput: true,
 				});
-
-				return this.#runHandler(rawContext, contextPromise, handler);
 			});
 
 			return this as any;
@@ -222,7 +209,12 @@ export class $Pulsar<
 		let result: RouteResult;
 
 		if (!routeMatches) {
-			result = await this.#handleNotFound(request);
+			result = await this.#runHandler(
+				() => {
+					throw new NotFoundError(pathname);
+				},
+				{ request, params: {}, schemas: {}, path: '', parseInput: false }
+			);
 		} else if (routeMatches.handlers.length > 1) {
 			throw new Error(`You have conflicts for path ${method} ${pathname}`);
 		} else {
