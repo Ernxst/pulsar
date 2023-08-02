@@ -7,22 +7,30 @@ export const ContentTypes = {
 	XML: 'application/xml',
 } as const;
 
-export function inferContentType(data: any) {
-	if (typeof data === 'string') {
-		const lower = data.toLowerCase();
+export function inferContentType(input: any) {
+	if (typeof input === 'string') {
+		const lower = input.toLowerCase();
 
 		if (lower.startsWith('<!doctype html>') || lower.startsWith('<html')) {
-			return ContentTypes.HTML;
+			return 'text/html; charset=utf-8';
 		}
 
-		return ContentTypes.TEXT;
-	} else if (data instanceof ArrayBuffer) {
-		return ContentTypes.OCTET_STREAM;
-	} else if (data instanceof FormData) {
-		return ContentTypes.FORM_DATA;
-	} else if (typeof data === 'object') {
-		return ContentTypes.JSON;
+		return 'text/plain';
+	} else if (typeof input === 'number') {
+		return 'application/json; charset=utf-8';
+	} else if (typeof input === 'boolean') {
+		return 'application/json; charset=utf-8';
+	} else if (typeof input === 'object') {
+		if (Array.isArray(input)) {
+			return 'application/json';
+		} else if (input instanceof FormData) {
+			return 'multipart/form-data';
+		} else if (input instanceof Blob) {
+			return input.type || 'application/octet-stream';
+		} else {
+			return 'application/json';
+		}
 	}
 
-	return ContentTypes.TEXT;
+	return 'application/octet-stream';
 }
