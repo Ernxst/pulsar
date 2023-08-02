@@ -30,5 +30,5 @@ export function inferContentType(input: any) {
 		}
 	}
 
-	return 'application/octet-stream';
+	return undefined;
 }
