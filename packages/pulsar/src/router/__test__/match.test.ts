@@ -68,6 +68,7 @@ describe('When matching routes', () => {
 
 				beforeEach(() => {
 					const fn = method.toLowerCase() as Lowercase<typeof method>;
+					// @ts-expect-error it's fine
 					router[fn](path, handler);
 				});
 
