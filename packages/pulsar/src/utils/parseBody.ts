@@ -5,7 +5,9 @@ export async function parseBody(item: Request | Response) {
 	const contentType = item.headers.get('Content-Type');
 	if (!contentType) return {};
 
-	if (
+	if (contentType.startsWith('application/json')) {
+		return await item.json();
+	} else if (
 		contentType.startsWith('multipart/form-data') ||
 		contentType.startsWith('application/x-www-form-urlencoded')
 	) {
@@ -16,8 +18,6 @@ export async function parseBody(item: Request | Response) {
 		});
 
 		return form;
-	} else if (contentType.startsWith('application/json')) {
-		return await item.json();
 	}
 
 	return await item.text();
