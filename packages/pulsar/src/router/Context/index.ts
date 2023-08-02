@@ -96,7 +96,7 @@ export class Context<
 		}
 
 		const contentType = this.#response.headers.get('Content-Type');
-		if (contentType?.includes('application/json; charset=utf-8')) {
+		if (contentType?.includes('application/json')) {
 			this.#response.payload = JSON.stringify(body);
 		} else {
 			this.#response.payload = body;
