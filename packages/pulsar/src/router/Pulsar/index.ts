@@ -244,6 +244,7 @@ export class $Pulsar<
 			[path, middleware] = [pathOrMiddleware, middlewareOrUndefined];
 		}
 
+		this.#config.middleware[path] ??= [];
 		this.#config.middleware[path].push(middleware);
 
 		return this as any;
