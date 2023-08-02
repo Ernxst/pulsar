@@ -1,21 +1,13 @@
 import type { ZodError } from 'zod';
 import type { ErrorCode } from './types';
 
-export const ErrorCodeToStatus = {
-	NOT_FOUND: 404,
-	VALIDATION: 400,
-	INTERNAL_SERVER_ERROR: 500,
-} as const satisfies Record<ErrorCode, number>;
-
 export class PulsarError<TCode extends ErrorCode = ErrorCode> extends Error {
 	public readonly code: TCode;
-	public readonly status: (typeof ErrorCodeToStatus)[TCode];
 
 	constructor(code: TCode, ...args: ConstructorParameters<typeof Error>) {
 		super(...args);
 
 		this.code = code;
-		this.status = ErrorCodeToStatus[code];
 		this.name = 'PulsarError';
 	}
 }
