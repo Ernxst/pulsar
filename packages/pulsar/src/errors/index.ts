@@ -1,3 +1,4 @@
+import type { ZodError } from 'zod';
 import type { ErrorCode } from './types';
 
 export const ErrorCodeToStatus = {
@@ -7,12 +8,12 @@ export const ErrorCodeToStatus = {
 	UNKNOWN: 500,
 } as const satisfies Record<ErrorCode, number>;
 
-export class PulsarError<TCode extends ErrorCode> extends Error {
+export class PulsarError<TCode extends ErrorCode = ErrorCode> extends Error {
 	public readonly code: TCode;
 	public readonly status: (typeof ErrorCodeToStatus)[TCode];
 
-	constructor(code: TCode, message: string) {
-		super(message);
+	constructor(code: TCode, ...args: ConstructorParameters<typeof Error>) {
+		super(...args);
 
 		this.code = code;
 		this.status = ErrorCodeToStatus[code];
@@ -21,24 +22,24 @@ export class PulsarError<TCode extends ErrorCode> extends Error {
 }
 
 export class NotFoundError extends PulsarError<'NOT_FOUND'> {
-	constructor(message: string) {
-		super('NOT_FOUND', message);
+	constructor(path: string) {
+		super('NOT_FOUND', `Could not find resource at ${path}`);
 
 		this.name = 'NotFoundError';
 	}
 }
 
 export class ValidationError extends PulsarError<'VALIDATION'> {
-	constructor(message: string) {
-		super('VALIDATION', message);
+	constructor(error: ZodError) {
+		super('VALIDATION', 'Validation error', { cause: error });
 
 		this.name = 'ValidationError';
 	}
 }
 
 export class InternalServerError extends PulsarError<'INTERNAL_SERVER_ERROR'> {
-	constructor(message: string) {
-		super('INTERNAL_SERVER_ERROR', message);
+	constructor(error: unknown) {
+		super('INTERNAL_SERVER_ERROR', 'An error occurred', { cause: error });
 
 		this.name = 'InternalServerError';
 	}
