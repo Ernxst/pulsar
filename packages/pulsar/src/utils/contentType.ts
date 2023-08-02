@@ -1,12 +1,3 @@
-export const ContentTypes = {
-	JSON: 'application/json',
-	HTML: 'text/html; charset=utf-8',
-	TEXT: 'text/plain',
-	FORM_DATA: 'multipart/form-data',
-	OCTET_STREAM: 'application/octet-stream',
-	XML: 'application/xml',
-} as const;
-
 export function inferContentType(input: any) {
 	if (typeof input === 'string') {
 		const lower = input.toLowerCase();

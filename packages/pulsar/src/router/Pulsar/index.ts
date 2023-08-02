@@ -1,6 +1,5 @@
 import { compile } from 'src/middleware/utils';
 import { parseBody } from 'src/utils/parseBody';
-import { ContentTypes } from 'src/utils/contentType';
 import { type AnyZodObject, z } from 'zod';
 import { asyncify } from 'src/utils/asyncify';
 import type { HttpMethod, Path, Promisable, Runtime } from 'src/types/util';
@@ -158,7 +157,7 @@ export class $Pulsar<
 		// If there is no user payload, it means we're using our default error
 		// And we know it's JSON (see above), so we can set the content type
 		if (!routeResult.payload) {
-			headers.set('Content-Type', ContentTypes.JSON);
+			headers.set('Content-Type', 'application/json; charset=utf-8');
 		}
 
 		return { status, statusText: routeResult.statusText, headers, payload };

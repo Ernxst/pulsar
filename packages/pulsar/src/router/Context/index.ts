@@ -6,7 +6,7 @@ import type {
 	Runtime,
 	inferPathParams,
 } from 'src';
-import { ContentTypes, inferContentType } from 'src/utils/contentType';
+import { inferContentType } from 'src/utils/contentType';
 import { z } from 'zod';
 import { getQueryParams } from 'hono/utils/url';
 import type { inferQuery } from '../types';
@@ -96,7 +96,7 @@ export class Context<
 		}
 
 		const contentType = this.#response.headers.get('Content-Type');
-		if (contentType?.includes(ContentTypes.JSON)) {
+		if (contentType?.includes('application/json; charset=utf-8')) {
 			this.#response.payload = JSON.stringify(body);
 		} else {
 			this.#response.payload = body;
@@ -194,31 +194,34 @@ export class Context<
 
 	// Response shortcuts
 	public json: TRouteCtx['json'] = (body) => {
-		this.#response.headers.set('Content-Type', ContentTypes.JSON);
+		this.#response.headers.set(
+			'Content-Type',
+			'application/json; charset=utf-8'
+		);
 		this.#response.payload = JSON.stringify(body);
 		return body;
 	};
 
 	public html: TRouteCtx['html'] = (body) => {
-		this.#response.headers.set('Content-Type', ContentTypes.HTML);
+		this.#response.headers.set('Content-Type', 'text/html; charset=utf-8');
 		this.#response.payload = body;
 		return body;
 	};
 
 	public text: TRouteCtx['text'] = (body) => {
-		this.#response.headers.set('Content-Type', ContentTypes.TEXT);
+		this.#response.headers.set('Content-Type', 'text/plain');
 		this.#response.payload = body;
 		return body;
 	};
 
 	public xml: TRouteCtx['xml'] = (body) => {
-		this.#response.headers.set('Content-Type', ContentTypes.XML);
+		this.#response.headers.set('Content-Type', 'application/xml');
 		this.#response.payload = body;
 		return body;
 	};
 
 	public binary: TRouteCtx['binary'] = (body) => {
-		this.#response.headers.set('Content-Type', ContentTypes.OCTET_STREAM);
+		this.#response.headers.set('Content-Type', 'application/octet-stream');
 		this.#response.payload = body;
 		return body;
 	};
