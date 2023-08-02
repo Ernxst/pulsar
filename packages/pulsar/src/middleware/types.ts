@@ -1,23 +1,20 @@
-import type { RouteContext } from '../route/types';
+import type { QueryParams, RouteContext } from '../route/types';
 import type { Path, Promisable } from '../types/util';
 
 /**
  * The context object passed to middleware handlers.
  */
 export interface MiddlewareContext<TLocals extends object = {}>
-	extends RouteContext<
-		Path,
-		Record<string, string | undefined>,
-		Record<string, unknown>,
-		TLocals
-	> {
+	extends RouteContext<Path, QueryParams, object, TLocals> {
 	/**
 	 * Call next middleware, or route handler if there is no more middleware.
 	 *
 	 * This is useful for middleware that needs to do something after the
 	 * route handler has finished.
+	 *
+	 * @returns A promise resolving to the response payload.
 	 */
-	next(): Promise<void>;
+	next(): Promise<unknown>;
 }
 
 /**
