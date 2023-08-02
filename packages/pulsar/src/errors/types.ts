@@ -13,17 +13,12 @@ export interface ErrorHandler<
 	(context: ErrorContext<TContext>): Promisable<TErrorResponse>;
 }
 
-export type ErrorCode =
-	| 'NOT_FOUND'
-	| 'VALIDATION'
-	| 'INTERNAL_SERVER_ERROR'
-	| 'UNKNOWN';
+export type ErrorCode = 'NOT_FOUND' | 'VALIDATION' | 'INTERNAL_SERVER_ERROR';
 
 export type ErrorContext<TContext extends object = {}> =
 	| NotFoundContext<TContext>
 	| ValidationErrorContext<TContext>
-	| InternalServerErrorContext<TContext>
-	| UnknownErrorContext<TContext>;
+	| InternalServerErrorContext<TContext>;
 
 type BaseErrorContext<
 	TCode extends ErrorCode,
@@ -45,10 +40,5 @@ export interface ValidationErrorContext<TLocals extends object = {}>
 
 export interface InternalServerErrorContext<TLocals extends object = {}>
 	extends BaseErrorContext<'INTERNAL_SERVER_ERROR', TLocals> {
-	error: Error;
-}
-
-export interface UnknownErrorContext<TLocals extends object = {}>
-	extends BaseErrorContext<'UNKNOWN', TLocals> {
 	error: Error;
 }

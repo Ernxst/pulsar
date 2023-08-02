@@ -2,7 +2,6 @@ export {
 	InternalServerError,
 	NotFoundError,
 	PulsarError,
-	UnknownError,
 	ValidationError,
 } from './errors';
 export type { ErrorCode, ErrorContext, ErrorHandler } from './errors/types';

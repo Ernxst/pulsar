@@ -5,7 +5,6 @@ export const ErrorCodeToStatus = {
 	NOT_FOUND: 404,
 	VALIDATION: 400,
 	INTERNAL_SERVER_ERROR: 500,
-	UNKNOWN: 500,
 } as const satisfies Record<ErrorCode, number>;
 
 export class PulsarError<TCode extends ErrorCode = ErrorCode> extends Error {
@@ -42,13 +41,5 @@ export class InternalServerError extends PulsarError<'INTERNAL_SERVER_ERROR'> {
 		super('INTERNAL_SERVER_ERROR', 'An error occurred', { cause: error });
 
 		this.name = 'InternalServerError';
-	}
-}
-
-export class UnknownError extends PulsarError<'UNKNOWN'> {
-	constructor(message: string) {
-		super('UNKNOWN', message);
-
-		this.name = 'UnknownError';
 	}
 }
