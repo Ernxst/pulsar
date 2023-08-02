@@ -1,5 +1,7 @@
+import { appRouter } from './router';
+
 export default {
-	fetch() {
-		// TODO: Use router fetch
+	fetch(request: Request) {
+		return appRouter.fetch(request);
 	},
 };

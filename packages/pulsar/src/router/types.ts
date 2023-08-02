@@ -1,8 +1,10 @@
 import type { ZodObject, ZodType, z } from 'zod';
 import type { ErrorHandler } from '../errors/types';
 import type { Middleware } from '../middleware/types';
-import type { AnyRoute, Route, RouteContext } from '../route/types';
-import type { HttpMethod, Path, Promisable, inferRoutes } from '../types/util';
+import type { Route, RouteContext } from '../route/types';
+import type { HttpMethod, Path, Promisable } from '../types/util';
+import type { RouteTree } from './Pulsar/types';
+import type { Pulsar } from '.';
 
 export type QuerySchema = Record<string, ZodType>;
 export type BodySchema = Record<string, ZodType>;
@@ -13,10 +15,6 @@ export type EmptyRoutes = Record<Path, never>;
 export type ExtractRoutes<TRouter extends AnyRouter> =
 	// This conditional may be a performance bottleneck ...
 	TRouter['_']['routes'] extends EmptyRoutes & infer Routes ? Routes : never;
-
-type MultiRoutes = Record<HttpMethod, AnyRoute>;
-
-export type RouteTree = Record<Path, MultiRoutes>;
 
 export type Router<
 	TGroup extends Path = '',
@@ -34,7 +32,7 @@ export type Router<
 			handler: (
 				context: RouteContext<TGroup, {}, {}, TContext>
 			) => Promisable<TOut>
-		): Router<
+		): Pulsar<
 			TGroup,
 			TRoutes & {
 				[K in TGroup]: {
@@ -73,7 +71,7 @@ export type Router<
 					TContext
 				>
 			) => Promisable<TOut>
-		): Router<
+		): Pulsar<
 			TGroup,
 			TRoutes & {
 				[TFullPath in TGroup]: {
@@ -99,7 +97,7 @@ export type Router<
 			handler: (
 				context: RouteContext<`${TGroup}${TPath}`, {}, {}, TContext>
 			) => Promisable<TOut>
-		): Router<
+		): Pulsar<
 			TGroup,
 			TRoutes & {
 				[K in `${TGroup}${TPath}`]: {
@@ -139,7 +137,7 @@ export type Router<
 					TContext
 				>
 			) => Promisable<TOut>
-		): Router<
+		): Pulsar<
 			TGroup,
 			TRoutes & {
 				[TFullPath in `${TGroup}${TPath}`]: {
@@ -177,7 +175,7 @@ export type Router<
 	 */
 	onError<const TError extends object>(
 		errorHandler: ErrorHandler<TContext, TError>
-	): Router<TGroup, TRoutes, TContext, TError>;
+	): Pulsar<TGroup, TRoutes, TContext, TError>;
 
 	use: {
 		/**
@@ -187,7 +185,7 @@ export type Router<
 		 */
 		<const TNewContext extends object = TContext>(
 			middleware: Middleware<TContext, TNewContext>
-		): Router<TGroup, TRoutes, TContext & TNewContext, TErrShape>;
+		): Pulsar<TGroup, TRoutes, TContext & TNewContext, TErrShape>;
 
 		/**
 		 * Specify middleware to run on all routes that match the given path.
@@ -195,7 +193,7 @@ export type Router<
 		<const TNewContext extends object = TContext>(
 			path: Path,
 			middleware: Middleware<TContext, TNewContext>
-		): Router<TGroup, TRoutes, TContext, TErrShape>;
+		): Pulsar<TGroup, TRoutes, TContext, TErrShape>;
 	};
 
 	route: {
@@ -203,8 +201,8 @@ export type Router<
 		 * Add the routes from the given router to this router group.
 		 */
 		<TNewRoutes extends RouteTree>(
-			builder: (router: Router) => Router<Path, TNewRoutes, any>
-		): Router<TGroup, TRoutes & TNewRoutes, TContext, TErrShape>;
+			builder: (router: AnyRouter) => Pulsar<Path, TNewRoutes, any>
+		): Pulsar<TGroup, TRoutes & TNewRoutes, TContext, TErrShape>;
 	};
 
 	group: {
@@ -215,7 +213,7 @@ export type Router<
 			TSubgroup extends Path,
 			TSubRoutes extends RouteTree,
 			TSubContext extends object,
-			TRouter extends Router<
+			TRouter extends Pulsar<
 				`${TGroup}${TSubgroup}`,
 				TSubRoutes,
 				TSubContext,
@@ -224,19 +222,20 @@ export type Router<
 		>(
 			path: TSubgroup,
 			builder: (
-				router: Router<
+				router: Pulsar<
 					`${TGroup}${TSubgroup}`,
 					EmptyRoutes,
 					TContext,
 					TErrShape
 				>
 			) => TRouter
-		): Router<TGroup, TRoutes & ExtractRoutes<TRouter>, TContext, TErrShape>;
+		): Pulsar<TGroup, TRoutes & ExtractRoutes<TRouter>, TContext, TErrShape>;
 	};
 
-	// @ts-expect-error how does this not satisfy AnyRouter
-	getRoutes(): inferRoutes<Router<TGroup, TRoutes, TContext, TErrShape>>;
+	/**
+	 * Handle a request using this router, returning a response.
+	 */
 	fetch(request: Request): Promise<Response>;
 };
 
-export type AnyRouter = Router<any, any, any, any>;
+export type AnyRouter = Pulsar<any, any, any, any>;

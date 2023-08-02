@@ -1,4 +1,5 @@
-import type { AnyRouter, ExtractRoutes, Router } from '../router/types';
+import type { Pulsar } from 'src';
+import type { AnyRouter, ExtractRoutes } from '../router/types';
 
 /**
  * The runtime the router is running on
@@ -22,7 +23,7 @@ export type Promisable<T> = T | Promise<T>;
 export type Path = `/${string}` | '';
 
 export type inferRoutes<TRouter extends AnyRouter> = {
-	[K in keyof ExtractRoutes<TRouter>]: ExtractRoutes<TRouter>[K] extends Router<
+	[K in keyof ExtractRoutes<TRouter>]: ExtractRoutes<TRouter>[K] extends Pulsar<
 		infer _,
 		infer __,
 		infer ___,

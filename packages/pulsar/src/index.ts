@@ -26,9 +26,9 @@ export type {
 	AnyRouter,
 	BodySchema,
 	QuerySchema,
-	RouteTree,
 	Router,
 } from './router/types';
+export type { RouteTree } from './router/Pulsar/types';
 
 export type {
 	HttpMethod,
