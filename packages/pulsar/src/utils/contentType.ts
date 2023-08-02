@@ -1,9 +1,13 @@
 export function inferContentType(input: any) {
 	if (typeof input === 'string') {
-		const lower = input.toLowerCase();
+		const lower = input.toLowerCase().trim();
 
 		if (lower.startsWith('<!doctype html>') || lower.startsWith('<html')) {
 			return 'text/html; charset=utf-8';
+		}
+
+		if (lower.startsWith('<?xml')) {
+			return 'application/xml';
 		}
 
 		return 'text/plain';
