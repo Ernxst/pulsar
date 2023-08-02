@@ -60,7 +60,7 @@ export interface RouteContext<
 	/**
 	 * Set the response status code.
 	 */
-	status(status: number): void;
+	status(status: number, statusText?: string): void;
 	/**
 	 * Apply a cache header to the response. This will append to any existing
 	 * cache headers.
