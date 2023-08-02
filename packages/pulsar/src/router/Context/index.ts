@@ -72,8 +72,8 @@ export class Context<
 
 		this.headers(headers);
 		this.status(status, statusText);
-		this.setRequestBody(this.body);
-		this.addLocals(this.locals);
+		this.setRequestBody(from.body);
+		this.addLocals(from.locals);
 		if (payload) this.setResponseBody(payload);
 	}
 
@@ -82,7 +82,7 @@ export class Context<
 	}
 
 	public addLocals<TNewLocals extends object>(locals: TNewLocals) {
-		Object.assign(this.locals, locals);
+		Object.assign(this.#locals, locals);
 	}
 
 	public setRequestBody(body: TBody) {
