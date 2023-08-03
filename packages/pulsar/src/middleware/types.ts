@@ -1,4 +1,3 @@
-import { type PulsarError } from 'src';
 import type { QueryParams, RouteContext } from '../route/types';
 import type { Path } from '../types/util';
 
@@ -37,7 +36,7 @@ export interface NextFunction<TNewContext extends object = {}> {
 
 export type MiddlewareResult<
 	_PlaceholderForUpdatedContext extends object = {},
-> = { ok: true; data: unknown } | { ok: false; error: PulsarError };
+> = { ok: true; data: unknown } | { ok: false; error: unknown };
 
 /**
  * The context object passed to middleware handlers.
@@ -71,7 +70,7 @@ export type Middleware<
 	 */
 	(
 		context: MiddlewareContext<TLocals>
-	) => Promise<MiddlewareResult<TNewContext> | void>;
+	) => Promise<MiddlewareResult<TNewContext>>;
 
 /**
  * Middleware builder is used to build middleware pipelines.
