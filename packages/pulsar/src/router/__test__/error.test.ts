@@ -26,10 +26,7 @@ describe('Custom error handling', () => {
 		test('should call custom error handler', () => {
 			expect(errorHandler).toHaveBeenCalled();
 			expect(errorHandler).toHaveBeenCalledWith(
-				expect.objectContaining({
-					code: 'NOT_FOUND',
-					path: new URL('https://example.com/'),
-				})
+				expect.objectContaining({ code: 'NOT_FOUND', path: '/' })
 			);
 		});
 
