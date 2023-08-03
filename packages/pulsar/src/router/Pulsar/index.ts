@@ -206,7 +206,7 @@ export class $Pulsar<
 				() => {
 					throw new NotFoundError(pathname);
 				},
-				{ request, params: {}, schemas: {}, path: '', parseInput: false }
+				{ request, params: {}, schemas: {}, path: pathname, parseInput: false }
 			);
 		} else if (routeMatches.handlers.length > 1) {
 			throw new Error(`You have conflicts for path ${method} ${pathname}`);
