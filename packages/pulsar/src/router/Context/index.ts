@@ -147,13 +147,13 @@ export class Context<
 	}
 
 	// Methods
-	public status(status: number, statusText?: string): void {
+	public status: TRouteCtx['status'] = (status, statusText) => {
 		this.#response.status = status;
 		if (statusText) {
 			this.#response.statusText = statusText;
 		}
 		// TODO: Add status text lookup
-	}
+	};
 
 	public cache: TRouteCtx['cache'] = (options) => {
 		const headers = cacheHeader(options);
