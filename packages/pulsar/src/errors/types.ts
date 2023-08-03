@@ -28,9 +28,7 @@ type BaseErrorContext<
 };
 
 export interface NotFoundContext<TLocals extends object = {}>
-	extends BaseErrorContext<'NOT_FOUND', TLocals> {
-	path: URL;
-}
+	extends BaseErrorContext<'NOT_FOUND', TLocals> {}
 
 export interface ValidationErrorContext<TLocals extends object = {}>
 	extends BaseErrorContext<'VALIDATION', TLocals> {

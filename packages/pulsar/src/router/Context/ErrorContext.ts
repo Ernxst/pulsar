@@ -37,12 +37,9 @@ export class NotFoundErrorContext<
 {
 	public readonly code = 'NOT_FOUND';
 
-	public get path() {
-		return new URL(this.request.url) as any;
-	}
-
 	constructor(ctx: Context<TPath, TQuery, TBody, TContext>) {
-		super(ctx.config);
+		const pathname = new URL(ctx.request.url).pathname as TPath;
+		super({ ...ctx.config, path: pathname });
 		this.fromContext(ctx);
 	}
 }
