@@ -41,23 +41,35 @@ export class Context<
 	> = RouteContext<TPath, inferQuery<TQuery>, TBody, TContext>,
 > implements RouteContext<TPath, inferQuery<TQuery>, TBody, TContext>
 {
-	#body: TBody;
-	readonly #locals: TContext;
 	readonly #response: RouteResult;
 
+	public readonly locals: TContext;
+	public readonly request: Request;
+	public readonly path: TPath;
+	public readonly params: inferPathParams<TPath>;
+	public readonly runtime: Runtime;
+	public readonly query: inferQuery<TQuery>;
+	public body: TBody;
+
 	constructor(public readonly config: ContextOptions<TPath, TQuery>) {
-		this.#body = {} as TBody;
-		this.#locals = {} as TContext;
+		this.body = {} as TBody;
+		this.locals = {} as TContext;
+
 		this.#response = {
 			status: 200,
 			statusText: 'OK',
 			headers: new Headers(),
 			payload: undefined,
 		};
-	}
 
-	get #querySchema() {
-		if (this.config.query) return z.object(this.config.query);
+		this.request = config.request;
+		this.path = config.path;
+		this.params = config.params;
+		this.runtime = config.runtime;
+
+		const queryParams = getQueryParams(this.request.url);
+		const schema = config.query ? z.object(config.query) : undefined;
+		this.query = schema ? schema.parse(queryParams) : (queryParams as any);
 	}
 
 	/**
@@ -97,11 +109,11 @@ export class Context<
 	}
 
 	public addLocals<TNewLocals extends object>(locals: TNewLocals) {
-		Object.assign(this.#locals, locals);
+		Object.assign(this.locals, locals);
 	}
 
 	public setRequestBody(body: TBody) {
-		this.#body = body;
+		this.body = body;
 	}
 
 	public setResponseBody<TNewBody>(body: TNewBody) {
@@ -111,39 +123,6 @@ export class Context<
 		}
 
 		this.#response.payload = body;
-	}
-
-	// Properties
-	public get runtime(): Runtime {
-		return this.config.runtime;
-	}
-
-	public get locals(): TContext {
-		return this.#locals;
-	}
-
-	public get request(): Request {
-		return this.config.request;
-	}
-
-	public get path(): TPath {
-		return this.config.path;
-	}
-
-	public get params(): inferPathParams<TPath> {
-		return this.config.params;
-	}
-
-	public get query(): inferQuery<TQuery> {
-		const queryParams = getQueryParams(this.request.url);
-
-		return this.#querySchema
-			? this.#querySchema.parse(queryParams)
-			: (queryParams as any);
-	}
-
-	public get body(): TBody {
-		return this.#body;
 	}
 
 	// Methods
