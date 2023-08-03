@@ -30,14 +30,13 @@ export function compile<
 				return { data: result, ok: true as const };
 			}
 
-			const handler = middleware[i];
+			function next(update?: any) {
+				if (update) context.addLocals(update);
+				return dispatch(i + 1);
+			}
 
-			Object.assign(context, {
-				next(update: any) {
-					if (update) context.addLocals(update);
-					return dispatch(i + 1);
-				},
-			});
+			const handler = middleware[i];
+			context.next = next.bind(context);
 
 			return handler(context);
 		}
