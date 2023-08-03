@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { HttpMethod } from 'src';
+import { type HttpMethod, NotFoundError } from 'src';
 import { Pulsar } from '..';
 
 function request(method: string, url: string) {
@@ -93,40 +93,27 @@ describe('When matching routes', () => {
 					});
 
 					describe('when the method does not match', () => {
-						let response: Response;
+						const unknown = method === 'GET' ? 'POST' : 'GET';
 
-						beforeEach(async () => {
-							const unknown = method === 'GET' ? 'POST' : 'GET';
-							response = await router.fetch(request(unknown, match));
-						});
+						describe('when the path does not match', () => {
+							test('should throw a NotFoundError', async () => {
+								await expect(
+									router.fetch(request(unknown, ''))
+								).rejects.toThrowError(new NotFoundError('/'));
 
-						test('should not call route handler', () => {
-							expect(handler).not.toHaveBeenCalled();
-						});
-
-						test('should return 404', () => {
-							expect(response.ok).toBe(false);
-							expect(response.status).toBe(404);
-							expect(response.statusText).toBe('Not found');
+								expect(handler).not.toHaveBeenCalled();
+							});
 						});
 					});
 				});
 
 				describe('when the path does not match', () => {
-					let response: Response;
+					test('should throw a NotFoundError', async () => {
+						await expect(
+							router.fetch(request(method, ''))
+						).rejects.toThrowError(new NotFoundError('/'));
 
-					beforeEach(async () => {
-						response = await router.fetch(request(method, ''));
-					});
-
-					test('should not call route handler', () => {
 						expect(handler).not.toHaveBeenCalled();
-					});
-
-					test('should return 404', () => {
-						expect(response.ok).toBe(false);
-						expect(response.status).toBe(404);
-						expect(response.statusText).toBe('Not found');
 					});
 				});
 			});
