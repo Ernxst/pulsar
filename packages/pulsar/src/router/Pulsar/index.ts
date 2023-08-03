@@ -185,7 +185,7 @@ export class $Pulsar<
 			const fullPath = `${this.#config.baseUrl}${path}` as Path;
 			const bodySchema = schemas.body ? z.object(schemas.body) : undefined;
 
-			this.#router.add(method, fullPath, async (request, params) => {
+			this.#router.add(method, fullPath, (request, params) => {
 				return this.#runHandler(handler, {
 					request,
 					params,
