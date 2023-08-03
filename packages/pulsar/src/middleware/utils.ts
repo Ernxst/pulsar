@@ -1,8 +1,6 @@
 import { type AnyMiddlewareContext } from 'src/router/Context/MiddlewareContext';
-import type { RouteResult } from 'src/router/Context';
-import type { Middleware } from './types';
-
-const RESULT_BRAND = Symbol('MiddlewareResult');
+import type { Promisable } from 'type-fest';
+import type { Middleware, MiddlewareResult } from './types';
 
 // Based on https://github.com/koajs/compose/blob/bff06e965caa71f3a1f4f6f6811290f7863c77ba/index.js
 
@@ -12,62 +10,36 @@ const RESULT_BRAND = Symbol('MiddlewareResult');
  */
 export function compile<
 	TContext extends AnyMiddlewareContext,
-	TReturn extends RouteResult,
+	TReturn extends object,
 >(
 	middleware: Middleware<any>[],
-	callback?: (context: TContext) => Promise<TReturn>
-) {
-	const middlewareLength = middleware.length;
-	const cb = callback ?? (() => Promise.resolve({}));
+	callback?: (context: TContext) => Promisable<TReturn>
+): (context: TContext) => Promise<MiddlewareResult<TReturn>> {
+	const len = middleware.length;
 
 	return async (context: TContext) => {
 		let index = -1;
-
-		return dispatch(0) as Promise<TReturn>;
+		return dispatch(0);
 
 		async function dispatch(i: number) {
 			if (i <= index) throw new Error('next() called multiple times');
+			index = i;
+
+			if (i === len) {
+				const result = await callback?.(context);
+				return { data: result, ok: true as const };
+			}
+
+			const handler = middleware[i];
 
 			Object.assign(context, {
-				// This method can only be called by middleware
-				// If it's called by the route handler, it is a defect
 				next(update: any) {
 					if (update) context.addLocals(update);
-
-					const promise = dispatch(i + 1);
-					return promise.then((result) => {
-						// If it has already been wrapped, don't wrap it again
-						if ((result as any)[RESULT_BRAND]) return result;
-
-						// Wrap the result in a brand so we can tell if it's a middleware result
-						// This is faster than creating a new class and using instanceof
-						return { [RESULT_BRAND]: true, data: result, ok: true };
-					});
+					return dispatch(i + 1);
 				},
 			});
 
-			index = i;
-			const handler = middleware[i];
-
-			const endOfChain = i >= middlewareLength;
-			const promise = endOfChain ? cb(context) : handler(context);
-			const output = await promise;
-
-			if (output) {
-				// Return middleware result as the result of the `next` function
-				if (output && (output as any)[RESULT_BRAND]) return output;
-
-				// Return route output back to the router
-				return (output as RouteResult).payload;
-			}
-
-			// If we're not at the end of the chain (meaning we're calling the route
-			// handler instead), and there is no output, it must mean the user
-			// forgot to call `next()`
-			if (!endOfChain)
-				throw new Error('Middleware did not return next() result');
-
-			return undefined;
+			return handler(context);
 		}
 	};
 }

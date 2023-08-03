@@ -12,6 +12,7 @@ import type { HttpMethod, Path, Promisable, Runtime } from 'src/types/util';
 import { asyncify } from 'src/utils/asyncify';
 import { parseBody } from 'src/utils/parseBody';
 import { type AnyZodObject, z } from 'zod';
+import type { MiddlewareResult } from 'src';
 import type { AnyContext, RouteResult } from '../Context';
 import {
 	InternalServerErrorContext,
@@ -74,9 +75,31 @@ export class $Pulsar<
 		return undefined;
 	}
 
-	#validateInput(input: any, bodySchema?: AnyZodObject) {
-		if (bodySchema) {
-			const parseResult = bodySchema.safeParse(input);
+	async #applyMiddleware<Ctx extends AnyMiddlewareContext, TOut extends object>(
+		context: Ctx,
+		callback: (ctx: Ctx) => Promisable<TOut>
+	): Promise<MiddlewareResult<TOut>> {
+		const middleware = this.#config.middleware['*'] || [];
+		middleware.push(...(this.#config.middleware[context.path] || []));
+
+		// Compile middleware into single function
+		const handler = compile(middleware, callback);
+		return handler(context);
+	}
+
+	async #validateInput<TCtx extends AnyMiddlewareContext>(
+		context: TCtx,
+		options: {
+			schemas: { query?: QuerySchema; body?: AnyZodObject };
+			parseInput: boolean;
+		}
+	) {
+		const { schemas, parseInput } = options;
+
+		// Parse request body and validate if necessary
+		const rawBody = await parseBody(context.request);
+		if (parseInput && schemas.body) {
+			const parseResult = schemas.body.safeParse(rawBody);
 			if (!parseResult.success) {
 				throw new ValidationError(parseResult.error);
 			}
@@ -84,45 +107,16 @@ export class $Pulsar<
 			return parseResult.data;
 		}
 
-		return input;
+		return parseInput;
 	}
 
-	async #applyMiddleware<
-		Ctx extends AnyMiddlewareContext,
-		TReturn extends RouteResult,
-	>(context: Ctx, callback: (ctx: Ctx) => Promise<TReturn>) {
-		const middleware = this.#config.middleware['*'] || [];
-		middleware.push(...(this.#config.middleware[context.path] || []));
-
-		// Compile middleware into single function
-		const handler = compile(middleware, callback);
-		const responsePromise = handler(context);
-
-		// Apply middleware and handle middleware errors
-		const [error, response] = await asyncify(responsePromise);
-		if (error) return this.#handleError(error, context);
-
-		context.setResponseBody(response);
-		return context.getResponse();
-	}
-
-	async #runHandler<Ctx extends AnyMiddlewareContext, const TReturn>(
+	async #runHandler<Ctx extends AnyMiddlewareContext, TReturn extends object>(
 		callback: (ctx: Ctx) => Promisable<TReturn>,
 		options: Pick<Ctx, 'request' | 'params' | 'path'> & {
 			schemas: { query?: QuerySchema; body?: AnyZodObject };
 			parseInput: boolean;
 		}
 	) {
-		// Wrapper function around the handler to handle errors and return response
-		const handler = async (handlerContext: Ctx) => {
-			const handleRequest = async () => await callback(handlerContext);
-			const [routeError, routeResponse] = await asyncify(handleRequest());
-			if (routeError) return this.#handleError(routeError, handlerContext);
-
-			handlerContext.setResponseBody(routeResponse);
-			return handlerContext.getResponse();
-		};
-
 		const { schemas, parseInput, ...opts } = options;
 
 		// Build raw context to pass to middleware
@@ -132,19 +126,21 @@ export class $Pulsar<
 			...opts,
 		}) as Ctx;
 
-		// Parse request body and validate if necessary
-		const validate = async () => {
-			const rawBody = await parseBody(context.request);
-			return parseInput
-				? this.#validateInput(rawBody, schemas.body)
-				: (rawBody as any);
+		const handler = async (ctx: Ctx) => {
+			const reqBody = await this.#validateInput(ctx, { schemas, parseInput });
+			ctx.setRequestBody(reqBody);
+
+			const result = await this.#applyMiddleware(ctx, callback);
+			const body = result.ok ? result.data : result.error;
+			ctx.setResponseBody(body);
+			return ctx.processResponse();
 		};
 
-		const [parseError, parsedReqBody] = await asyncify(validate());
-		if (parseError) return this.#handleError(parseError, context);
-		context.setRequestBody(parsedReqBody);
+		const promise = handler(context);
+		const [error, response] = await asyncify(promise);
+		if (error) return this.#handleError(error, context);
 
-		return await this.#applyMiddleware(context, handler);
+		return response;
 	}
 
 	#getErrorContextFromError(error: PulsarError, context: AnyContext) {
@@ -169,10 +165,9 @@ export class $Pulsar<
 			const pulsarError =
 				error instanceof PulsarError ? error : new InternalServerError(error);
 			const errorContext = this.#getErrorContextFromError(pulsarError, context);
-			const response = await this.#errorHandler(errorContext);
-
-			errorContext.setResponseBody(response);
-			return errorContext.getProcessedResponse();
+			const errorResponse = await this.#errorHandler(errorContext);
+			errorContext.setResponseBody(errorResponse);
+			return errorContext.processResponse();
 		}
 
 		throw error;

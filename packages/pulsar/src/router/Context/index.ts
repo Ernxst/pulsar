@@ -77,12 +77,12 @@ export class Context<
 		if (payload) this.setResponseBody(payload);
 	}
 
-	public getResponse(): RouteResult {
+	protected getResponse(): RouteResult {
 		return this.#response;
 	}
 
-	public getProcessedResponse(): RouteResult {
-		const data = this.#response;
+	public processResponse(): RouteResult {
+		const data = { ...this.#response };
 
 		const contentType = this.#response.headers.get('Content-Type');
 		if (
@@ -90,7 +90,7 @@ export class Context<
 			contentType.includes('application/json') &&
 			typeof data.payload !== 'string'
 		) {
-			data.payload = JSON.stringify(data.payload);
+			data.payload = JSON.stringify(data.payload) as any;
 		}
 
 		return data;
