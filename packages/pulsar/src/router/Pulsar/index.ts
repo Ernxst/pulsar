@@ -107,7 +107,7 @@ export class $Pulsar<
 			return parseResult.data;
 		}
 
-		return parseInput;
+		return rawBody as any;
 	}
 
 	async #runHandler<Ctx extends AnyMiddlewareContext, TReturn extends object>(
