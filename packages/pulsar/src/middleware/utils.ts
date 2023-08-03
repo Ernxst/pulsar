@@ -38,7 +38,9 @@ export function compile<
 			const handler = middleware[i];
 			context.next = next.bind(context);
 
-			return handler(context);
+			const result = await handler(context);
+			if (!result) throw new Error('Middleware did not return next() result');
+			return result;
 		}
 	};
 }
