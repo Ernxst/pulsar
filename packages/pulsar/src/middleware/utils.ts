@@ -15,9 +15,10 @@ export function compile<
 	TReturn extends RouteResult,
 >(
 	middleware: Middleware<any>[],
-	callback: (context: TContext) => Promise<TReturn>
+	callback?: (context: TContext) => Promise<TReturn>
 ) {
 	const middlewareLength = middleware.length;
+	const cb = callback ?? (() => Promise.resolve({}));
 
 	return async (context: TContext) => {
 		let index = -1;
@@ -37,6 +38,7 @@ export function compile<
 					return promise.then((result) => {
 						// If it has already been wrapped, don't wrap it again
 						if ((result as any)[RESULT_BRAND]) return result;
+
 						// Wrap the result in a brand so we can tell if it's a middleware result
 						// This is faster than creating a new class and using instanceof
 						return { [RESULT_BRAND]: true, data: result, ok: true };
@@ -48,20 +50,24 @@ export function compile<
 			const handler = middleware[i];
 
 			const endOfChain = i >= middlewareLength;
-			const promise = endOfChain ? callback(context) : handler(context);
+			const promise = endOfChain ? cb(context) : handler(context);
 			const output = await promise;
+
+			if (output) {
+				// Return middleware result as the result of the `next` function
+				if (output && (output as any)[RESULT_BRAND]) return output;
+
+				// Return route output back to the router
+				return (output as RouteResult).payload;
+			}
 
 			// If we're not at the end of the chain (meaning we're calling the route
 			// handler instead), and there is no output, it must mean the user
 			// forgot to call `next()`
-			if (!endOfChain && !output)
+			if (!endOfChain)
 				throw new Error('Middleware did not return next() result');
 
-			// Return middleware result as the result of the `next` function
-			if ((output as any)[RESULT_BRAND]) return output;
-
-			// Return route output back to the router
-			return (output as RouteResult).payload;
+			return undefined;
 		}
 	};
 }
