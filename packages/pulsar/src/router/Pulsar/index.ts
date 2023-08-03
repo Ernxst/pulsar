@@ -13,6 +13,7 @@ import { asyncify } from 'src/utils/asyncify';
 import { parseBody } from 'src/utils/parseBody';
 import { type AnyZodObject, z } from 'zod';
 import type { MiddlewareResult } from 'src';
+import { middlewareUtils } from 'src/middleware';
 import type { AnyContext, RouteResult } from '../Context';
 import {
 	InternalServerErrorContext,
@@ -237,8 +238,13 @@ export class $Pulsar<
 			[path, middleware] = [pathOrMiddleware, middlewareOrUndefined];
 		}
 
+		const parentMiddleware = middlewareUtils.extract(middleware);
+		const middlewareId = middlewareUtils.getId(middleware);
+		// It may not have an id if it was a function
+		if (!middlewareId) middlewareUtils.setId(middleware);
+
 		this.#config.middleware[path] ??= [];
-		this.#config.middleware[path].push(middleware);
+		this.#config.middleware[path].push(...parentMiddleware, middleware);
 
 		return this as any;
 	};
