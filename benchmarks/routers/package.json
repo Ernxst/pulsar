@@ -1,0 +1,19 @@
+{
+	"name": "@pulsar/router-benchmark",
+	"type": "module",
+	"version": "0.0.1",
+	"private": true,
+	"main": "index.js",
+	"scripts": {
+		"benchmark": "node --experimental-specifier-resolution=node index.js"
+	},
+	"devDependencies": {
+		"benchmark": "^2.1.4",
+		"edge-mock": "^0.0.15",
+		"hono": "^3.3.4",
+		"itty-router": "^3.0.11",
+		"pulsar": "^0.0.1",
+		"sunder": "^0.10.1",
+		"worktop": "^0.7.3"
+	}
+}

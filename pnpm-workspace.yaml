@@ -1,5 +1,6 @@
 packages:
   - docs
+  - 'benchmarks/*'
   - 'examples/*'
   - 'packages/*'
   - 'packages/middleware/*'
