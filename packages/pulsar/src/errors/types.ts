@@ -23,7 +23,7 @@ export type ErrorContext<TContext extends object = {}> =
 type BaseErrorContext<
 	TCode extends ErrorCode,
 	TLocals extends object = {},
-> = Omit<RouteContext<Path, QueryParams, object, TLocals>, 'path'> & {
+> = RouteContext<Path, QueryParams, object, TLocals> & {
 	code: TCode;
 };
 
