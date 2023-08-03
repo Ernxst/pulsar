@@ -15,6 +15,7 @@ export interface Options<
 	baseUrl: TPath;
 	middleware: MiddlewareRegister;
 	errorHandler?: Parameters<Pulsar<TPath, TRoutes, TCtx, TErr>['onError']>[0];
+	parentConfig?: Options<any, any, any, any>;
 }
 
 export type RouteHandler = (

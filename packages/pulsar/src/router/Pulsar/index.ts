@@ -61,6 +61,19 @@ export class $Pulsar<
 		return 'node';
 	}
 
+	get #errorHandler() {
+		const { errorHandler, parentConfig } = this.#config;
+		if (errorHandler) return errorHandler;
+
+		let config = parentConfig;
+		while (config) {
+			if (config.errorHandler) return config.errorHandler;
+			config = config.parentConfig;
+		}
+
+		return undefined;
+	}
+
 	#validateInput(input: any, bodySchema?: AnyZodObject) {
 		if (bodySchema) {
 			const parseResult = bodySchema.safeParse(input);
@@ -152,11 +165,11 @@ export class $Pulsar<
 		error: unknown,
 		context: AnyContext
 	): Promise<RouteResult> {
-		if (this.#config.errorHandler) {
+		if (this.#errorHandler) {
 			const pulsarError =
 				error instanceof PulsarError ? error : new InternalServerError(error);
 			const errorContext = this.#getErrorContextFromError(pulsarError, context);
-			const response = await this.#config.errorHandler(errorContext);
+			const response = await this.#errorHandler(errorContext);
 
 			errorContext.setResponseBody(response);
 			return errorContext.getProcessedResponse();
@@ -244,6 +257,7 @@ export class $Pulsar<
 		const pulsar = new $Pulsar<typeof baseUrl, EmptyRoutes, TCtx, TErr>({
 			...this.#config,
 			baseUrl,
+			parentConfig: this.#config,
 		});
 
 		const builtRouter = builder(pulsar);
