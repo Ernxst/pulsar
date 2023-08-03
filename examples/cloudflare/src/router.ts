@@ -25,7 +25,7 @@ export const appRouter = new Pulsar()
 			return { detail: ctx.error.message, errors: [ctx.error], code: ctx.code };
 		}
 
-		const cause = ctx.error.cause!;
+		const cause = ctx.error.cause as any;
 		console.error(cause);
 		status(500);
 		locals.sentry.captureException(ctx.error);
