@@ -1,3 +1,4 @@
+import { getQueryParams } from 'hono/utils/url';
 import { cacheHeader } from 'pretty-cache-header';
 import type {
 	Path,
@@ -8,7 +9,6 @@ import type {
 } from 'src';
 import { inferContentType } from 'src/utils/contentType';
 import { z } from 'zod';
-import { getQueryParams } from 'hono/utils/url';
 import type { inferQuery } from '../types';
 
 export interface RouteResult<TPayload extends object = any> {
@@ -81,6 +81,21 @@ export class Context<
 		return this.#response;
 	}
 
+	public getProcessedResponse(): RouteResult {
+		const data = this.#response;
+
+		const contentType = this.#response.headers.get('Content-Type');
+		if (
+			contentType &&
+			contentType.includes('application/json') &&
+			typeof data.payload !== 'string'
+		) {
+			data.payload = JSON.stringify(data.payload);
+		}
+
+		return data;
+	}
+
 	public addLocals<TNewLocals extends object>(locals: TNewLocals) {
 		Object.assign(this.#locals, locals);
 	}
@@ -95,12 +110,7 @@ export class Context<
 			this.headers('Content-Type', contentType);
 		}
 
-		const contentType = this.#response.headers.get('Content-Type');
-		if (contentType?.includes('application/json')) {
-			this.#response.payload = JSON.stringify(body);
-		} else {
-			this.#response.payload = body;
-		}
+		this.#response.payload = body;
 	}
 
 	// Properties

@@ -14,11 +14,6 @@ export class MiddlewareContext<
 	extends Context<TPath, inferQuery<TQuery>, TBody, TContext>
 	implements IMiddlewareContext<TContext>
 {
-	// @ts-expect-error TODO: fix
-	public next: IMiddlewareContext<TContext>['next'] = async () => {
-		return {
-			ok: true,
-			data: {},
-		};
-	};
+	// This will be assigned in src/middleware/utils.ts
+	public next!: IMiddlewareContext<TContext>['next'];
 }

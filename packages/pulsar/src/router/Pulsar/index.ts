@@ -1,30 +1,30 @@
-import { compile } from 'src/middleware/utils';
-import { parseBody } from 'src/utils/parseBody';
-import { type AnyZodObject, z } from 'zod';
-import { asyncify } from 'src/utils/asyncify';
-import type { HttpMethod, Path, Promisable, Runtime } from 'src/types/util';
+import { RegExpRouter } from 'hono/router/reg-exp-router';
+import { SmartRouter } from 'hono/router/smart-router';
+import { TrieRouter } from 'hono/router/trie-router';
 import {
 	InternalServerError,
 	NotFoundError,
 	PulsarError,
 	ValidationError,
 } from 'src/errors';
-import { SmartRouter } from 'hono/router/smart-router';
-import { RegExpRouter } from 'hono/router/reg-exp-router';
-import { TrieRouter } from 'hono/router/trie-router';
-import type { EmptyRoutes, QuerySchema, Router } from '../types';
-import {
-	type AnyMiddlewareContext,
-	MiddlewareContext,
-} from '../Context/MiddlewareContext';
+import { compile } from 'src/middleware/utils';
+import type { HttpMethod, Path, Promisable, Runtime } from 'src/types/util';
+import { asyncify } from 'src/utils/asyncify';
+import { parseBody } from 'src/utils/parseBody';
+import { type AnyZodObject, z } from 'zod';
+import type { AnyContext, RouteResult } from '../Context';
 import {
 	InternalServerErrorContext,
 	NotFoundErrorContext,
 	ValidationErrorContext,
 } from '../Context/ErrorContext';
-import type { AnyContext, RouteResult } from '../Context';
-import { extractArgs } from './utils';
+import {
+	type AnyMiddlewareContext,
+	MiddlewareContext,
+} from '../Context/MiddlewareContext';
+import type { EmptyRoutes, QuerySchema, Router } from '../types';
 import type { Options, RouteHandler, RouteTree } from './types';
+import { extractArgs } from './utils';
 
 export class $Pulsar<
 	TPath extends Path = '',
@@ -74,30 +74,23 @@ export class $Pulsar<
 		return input;
 	}
 
-	async #applyMiddleware<Ctx extends AnyMiddlewareContext>(
-		ctx: Ctx,
-		options: { parseInput: boolean; bodySchema: AnyZodObject | undefined }
-	) {
-		const { bodySchema, parseInput } = options;
-
-		// Parse request body
-		const rawBody = await parseBody(ctx.request);
-		const parsedReqBody = parseInput
-			? this.#validateInput(rawBody, bodySchema)
-			: (rawBody as any);
-
-		ctx.setRequestBody(parsedReqBody);
+	async #applyMiddleware<
+		Ctx extends AnyMiddlewareContext,
+		TReturn extends RouteResult,
+	>(context: Ctx, callback: (ctx: Ctx) => Promise<TReturn>) {
+		const middleware = this.#config.middleware['*'] || [];
+		middleware.push(...(this.#config.middleware[context.path] || []));
 
 		// Compile middleware into single function
-		const allMiddleware = this.#config.middleware['*'] || [];
-		allMiddleware.push(...(this.#config.middleware[ctx.path] || []));
-		const middleware = compile(allMiddleware);
+		const handler = compile(middleware, callback);
+		const responsePromise = handler(context);
 
-		// Run middleware and retrieve updated context
-		const customUserContext = await middleware(ctx);
-		ctx.addLocals(customUserContext);
+		// Apply middleware and handle middleware errors
+		const [error, response] = await asyncify(responsePromise);
+		if (error) return this.#handleError(error, context);
 
-		return ctx;
+		context.setResponseBody(response);
+		return context.getResponse();
 	}
 
 	async #runHandler<Ctx extends AnyMiddlewareContext, const TReturn>(
@@ -107,29 +100,38 @@ export class $Pulsar<
 			parseInput: boolean;
 		}
 	) {
-		const { schemas, ...opts } = options;
-		const rawContext = new MiddlewareContext({
+		// Wrapper function around the handler to handle errors and return response
+		const handler = async (handlerContext: Ctx) => {
+			const handleRequest = async () => await callback(handlerContext);
+			const [routeError, routeResponse] = await asyncify(handleRequest());
+			if (routeError) return this.#handleError(routeError, handlerContext);
+
+			handlerContext.setResponseBody(routeResponse);
+			return handlerContext.getResponse();
+		};
+
+		const { schemas, parseInput, ...opts } = options;
+
+		// Build raw context to pass to middleware
+		const context = new MiddlewareContext({
 			runtime: this.#runtime,
 			query: schemas.query,
 			...opts,
 		}) as Ctx;
 
-		const promise = this.#applyMiddleware(rawContext, {
-			...options,
-			bodySchema: schemas.body,
-		});
+		// Parse request body and validate if necessary
+		const validate = async () => {
+			const rawBody = await parseBody(context.request);
+			return parseInput
+				? this.#validateInput(rawBody, schemas.body)
+				: (rawBody as any);
+		};
 
-		const [error, handlerContext] = await asyncify(promise);
-		if (error) return this.#handleError(error, rawContext);
+		const [parseError, parsedReqBody] = await asyncify(validate());
+		if (parseError) return this.#handleError(parseError, context);
+		context.setRequestBody(parsedReqBody);
 
-		const handleRequest = async () => await callback(handlerContext);
-		const [routeError, routeResponse] = await asyncify(handleRequest());
-
-		// TODO: What about post-middleware?
-		if (routeError) return this.#handleError(routeError, handlerContext);
-
-		handlerContext.setResponseBody(routeResponse);
-		return handlerContext.getResponse();
+		return await this.#applyMiddleware(context, handler);
 	}
 
 	#getErrorContextFromError(error: PulsarError, context: AnyContext) {
@@ -157,7 +159,7 @@ export class $Pulsar<
 			const response = await this.#config.errorHandler(errorContext);
 
 			errorContext.setResponseBody(response);
-			return errorContext.getResponse();
+			return errorContext.getProcessedResponse();
 		}
 
 		throw error;
