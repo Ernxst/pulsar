@@ -150,41 +150,24 @@ export class $Pulsar<
 		error: unknown,
 		context: AnyContext
 	): Promise<RouteResult> {
-		let pulsarError;
-
-		if (error instanceof PulsarError) {
-			pulsarError = error;
-		} else {
-			console.error(error);
-			pulsarError = new InternalServerError(error);
-		}
-
-		const errorContext = this.#getErrorContextFromError(pulsarError, context);
-
 		if (this.#config.errorHandler) {
+			let pulsarError;
+
+			if (error instanceof PulsarError) {
+				pulsarError = error;
+			} else {
+				console.error(error);
+				pulsarError = new InternalServerError(error);
+			}
+
+			const errorContext = this.#getErrorContextFromError(pulsarError, context);
 			const response = await this.#config.errorHandler(errorContext);
+
 			errorContext.setResponseBody(response);
 			return errorContext.getResponse();
 		}
 
-		const routeResult = errorContext.getResponse();
-		const status = routeResult.status >= 400 ? routeResult.status : 500;
-		const headers = routeResult.headers;
-		const payload =
-			routeResult.payload ??
-			JSON.stringify({
-				detail: 'Internal server error',
-				error: pulsarError,
-				statusCode: status,
-			});
-
-		// If there is no user payload, it means we're using our default error
-		// And we know it's JSON (see above), so we can set the content type
-		if (!routeResult.payload) {
-			headers.set('Content-Type', 'application/json; charset=utf-8');
-		}
-
-		return { status, statusText: routeResult.statusText, headers, payload };
+		throw error;
 	}
 
 	#createRouteBuilder<TMethod extends HttpMethod>(method: TMethod) {
