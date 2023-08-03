@@ -17,7 +17,7 @@ export const appRouter = new Pulsar()
 		if (ctx.code === 'NOT_FOUND') {
 			cache({ maxAge: '1h' });
 			status(404);
-			return { detail: `Not found: ${ctx.path.pathname}`, code: ctx.code };
+			return { detail: `Not found: ${ctx.path}`, code: ctx.code };
 		}
 
 		if (ctx.code === 'VALIDATION') {
