@@ -17,7 +17,7 @@ export function compile<
 ): (context: TContext) => Promise<MiddlewareResult<TReturn>> {
 	const len = middleware.length;
 
-	return async (context: TContext) => {
+	return (context: TContext) => {
 		let index = -1;
 		return dispatch(0);
 
