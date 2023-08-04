@@ -23,7 +23,7 @@ function dedupeMiddleware(middleware: Middleware<any>[]) {
 		if (!id) return true;
 
 		if (seenIds.has(id)) {
-			console.warn('Duplicate middleware detected', handler);
+			// console.warn('Duplicate middleware detected', handler);
 			return false;
 		}
 

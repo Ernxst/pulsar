@@ -1,10 +1,9 @@
-import type { HttpMethod, Middleware, Path, Pulsar, Route } from 'src';
+import type { HttpMethod, Path, Pulsar, Route } from 'src';
 import type { RouteResult } from '../Context';
 
 export type MultiRoutes = Record<HttpMethod, Route<any, any, any, any, any>>;
 
 export type RouteTree = Record<Path, MultiRoutes>;
-type MiddlewareRegister = Record<string, Middleware<any>[]>;
 
 export interface Options<
 	TPath extends Path,
@@ -13,9 +12,9 @@ export interface Options<
 	TErr extends object,
 > {
 	baseUrl: TPath;
-	middleware: MiddlewareRegister;
 	errorHandler?: Parameters<Pulsar<TPath, TRoutes, TCtx, TErr>['onError']>[0];
 	parentConfig?: Options<any, any, any, any>;
+	parent?: Pulsar<any, any, any, any>;
 }
 
 export type RouteHandler = (

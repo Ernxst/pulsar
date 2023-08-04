@@ -12,7 +12,7 @@ import type { HttpMethod, Path, Promisable, Runtime } from 'src/types/util';
 import { asyncify } from 'src/utils/asyncify';
 import { parseBody } from 'src/utils/parseBody';
 import { type AnyZodObject, z } from 'zod';
-import type { MiddlewareResult } from 'src';
+import type { Middleware, MiddlewareResult } from 'src';
 import { middlewareUtils } from 'src/middleware';
 import type { AnyContext, RouteResult } from '../Context';
 import {
@@ -27,6 +27,8 @@ import {
 import type { EmptyRoutes, QuerySchema, Router } from '../types';
 import type { Options, RouteHandler, RouteTree } from './types';
 import { extractArgs } from './utils';
+
+const MIDDLEWARE_METHOD = 'ALL';
 
 export class $Pulsar<
 	TPath extends Path = '',
@@ -43,10 +45,14 @@ export class $Pulsar<
 {
 	readonly #config: Options<TPath, TRoutes, TCtx, TErr>;
 	readonly #router: SmartRouter<RouteHandler>;
+	readonly #middlewareRouter: SmartRouter<Middleware<TCtx>[]>;
 
 	constructor(config: Options<TPath, TRoutes, TCtx, TErr>) {
 		this.#config = config;
 		this.#router = new SmartRouter({
+			routers: [new RegExpRouter(), new TrieRouter()],
+		});
+		this.#middlewareRouter = new SmartRouter({
 			routers: [new RegExpRouter(), new TrieRouter()],
 		});
 	}
@@ -76,12 +82,27 @@ export class $Pulsar<
 		return undefined;
 	}
 
+	protected matchMiddleware(path: string): Middleware<any>[] {
+		const matches = this.#middlewareRouter.match(MIDDLEWARE_METHOD, path);
+		const middleware = matches?.handlers.flat() ?? [];
+
+		let parent = this.#config.parent;
+
+		while (parent) {
+			const parentMiddleware = parent.matchMiddleware(path);
+			middleware.push(...parentMiddleware);
+			parent = parent.#config.parent;
+		}
+
+		return middleware;
+	}
+
 	async #applyMiddleware<Ctx extends AnyMiddlewareContext, TOut extends object>(
 		context: Ctx,
 		callback: (ctx: Ctx) => Promisable<TOut>
 	): Promise<MiddlewareResult<TOut>> {
-		const middleware = this.#config.middleware['*'] || [];
-		middleware.push(...(this.#config.middleware[context.path] || []));
+		const pathname = new URL(context.request.url).pathname;
+		const middleware = this.matchMiddleware(pathname);
 
 		// Compile middleware into single function
 		const handler = compile(middleware, callback);
@@ -230,7 +251,7 @@ export class $Pulsar<
 
 	// @ts-expect-error TODO: Fix this
 	public use: TRouter['use'] = (pathOrMiddleware, middlewareOrUndefined) => {
-		let middleware, path;
+		let middleware: Middleware<TCtx>, path;
 
 		if (typeof pathOrMiddleware === 'function') {
 			[path, middleware] = ['*', pathOrMiddleware];
@@ -243,8 +264,10 @@ export class $Pulsar<
 		// It may not have an id if it was a function
 		if (!middlewareId) middlewareUtils.setId(middleware);
 
-		this.#config.middleware[path] ??= [];
-		this.#config.middleware[path].push(...parentMiddleware, middleware);
+		this.#middlewareRouter.add(MIDDLEWARE_METHOD, path, [
+			...parentMiddleware,
+			middleware,
+		]);
 
 		return this as any;
 	};
@@ -258,6 +281,7 @@ export class $Pulsar<
 		const pulsar = new $Pulsar<typeof baseUrl, EmptyRoutes, TCtx, TErr>({
 			...this.#config,
 			baseUrl,
+			parent: this,
 			parentConfig: this.#config,
 		});
 

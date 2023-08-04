@@ -12,6 +12,6 @@ export class Pulsar<
 	TErr extends object = {},
 > extends $Pulsar<TPath, TRoutes, TCtx, TErr> {
 	constructor() {
-		super({ baseUrl: '' as TPath, middleware: {} });
+		super({ baseUrl: '' as TPath });
 	}
 }
