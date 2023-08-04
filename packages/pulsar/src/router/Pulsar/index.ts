@@ -90,12 +90,12 @@ export class $Pulsar<
 
 		while (parent) {
 			const parentMiddleware = parent.matchMiddleware(path);
-			middleware.push(...parentMiddleware);
+			// prepend so the parent middleware runs first
+			middleware.unshift(...parentMiddleware);
 			parent = parent.#config.parent;
 		}
 
-		// Reverse array so that middleware is applied in correct order from root to this router
-		return middleware.reverse();
+		return middleware;
 	}
 
 	async #applyMiddleware<Ctx extends AnyMiddlewareContext, TOut extends object>(
