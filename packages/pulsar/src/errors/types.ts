@@ -4,7 +4,7 @@ import type { ValidationError } from '.';
 
 export interface ErrorHandler<
 	TContext extends object = {},
-	TErrorResponse extends object = {},
+	TErrorResponse = {},
 > {
 	/**
 	 * Handle an error, returning a response. This is useful for standardising

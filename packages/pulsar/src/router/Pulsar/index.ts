@@ -34,7 +34,7 @@ export class $Pulsar<
 	TPath extends Path = '',
 	TRoutes extends RouteTree = EmptyRoutes,
 	TCtx extends object = {},
-	TErr extends object = {},
+	TErr = {},
 	TRouter extends Router<TPath, TRoutes, TCtx, TErr> = Router<
 		TPath,
 		TRoutes,

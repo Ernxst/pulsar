@@ -20,7 +20,7 @@ export type Router<
 	TGroup extends Path = '',
 	TRoutes extends RouteTree = EmptyRoutes,
 	TContext extends object = {},
-	TErrShape extends object = {},
+	TErrShape = {},
 > = {
 	[TMethod in HttpMethod as Lowercase<TMethod>]: {
 		/**
@@ -173,7 +173,7 @@ export type Router<
 	 * This is useful for standardising error responses to make them easier to
 	 * unwrap in the client.
 	 */
-	onError<const TError extends object>(
+	onError<const TError>(
 		errorHandler: ErrorHandler<TContext, TError>
 	): Pulsar<TGroup, TRoutes, TContext, TError>;
 

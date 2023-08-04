@@ -9,7 +9,7 @@ export interface Options<
 	TPath extends Path,
 	TRoutes extends RouteTree,
 	TCtx extends object,
-	TErr extends object,
+	TErr,
 > {
 	baseUrl: TPath;
 	errorHandler?: Parameters<Pulsar<TPath, TRoutes, TCtx, TErr>['onError']>[0];

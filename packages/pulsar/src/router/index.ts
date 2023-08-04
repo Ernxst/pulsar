@@ -9,7 +9,7 @@ export class Pulsar<
 	TPath extends Path = '',
 	TRoutes extends RouteTree = EmptyRoutes,
 	TCtx extends object = {},
-	TErr extends object = {},
+	TErr = {},
 > extends $Pulsar<TPath, TRoutes, TCtx, TErr> {
 	constructor() {
 		super({ baseUrl: '' as TPath });
