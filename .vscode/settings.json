@@ -44,5 +44,8 @@
 	"typescript.enablePromptUseWorkspaceTsdk": true,
 	"typescript.tsdk": "./node_modules/typescript/lib",
 	"workbench.editor.labelFormat": "short",
-	"workbench.tree.indent": 20
+	"workbench.tree.indent": 20,
+	"[toml]": {
+		"editor.defaultFormatter": "tamasfe.even-better-toml"
+	}
 }
