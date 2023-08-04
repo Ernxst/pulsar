@@ -10,7 +10,7 @@ function book(pulsar: Pulsar) {
 	);
 }
 
-export const appRouter = new Pulsar()
+const appRouter = new Pulsar()
 	// Add X-message header
 	.use('/hello/*', async ({ headers, next }) => {
 		headers('X-message', 'This is addHeader middleware!');
@@ -89,8 +89,12 @@ export const appRouter = new Pulsar()
 	})
 	.get('/type-error', () => 'return not Response instance');
 
-export default appRouter;
-
 export type AppRouter = typeof appRouter;
 export type Context = inferRouterContext<AppRouter>;
 export type ErrorShape = inferErrorShape<AppRouter>;
+
+export default {
+	fetch(request: Request) {
+		return appRouter.fetch(request);
+	},
+};
