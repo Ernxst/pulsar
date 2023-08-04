@@ -94,7 +94,8 @@ export class $Pulsar<
 			parent = parent.#config.parent;
 		}
 
-		return middleware;
+		// Reverse array so that middleware is applied in correct order from root to this router
+		return middleware.reverse();
 	}
 
 	async #applyMiddleware<Ctx extends AnyMiddlewareContext, TOut extends object>(
