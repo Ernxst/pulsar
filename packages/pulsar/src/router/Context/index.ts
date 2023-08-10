@@ -76,6 +76,7 @@ export class PulsarContext<
 		this.headers(headers);
 		this.status(status, statusText);
 		this.body = from.body;
+		this.query = from.query;
 		this.addLocals(from.locals);
 		if (payload) this.setResponseBody(payload);
 	}

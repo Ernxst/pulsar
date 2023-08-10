@@ -1,14 +1,15 @@
-import type { Path, QuerySchema, ValidationError } from 'src';
+import type { Path, ValidationError } from 'src';
 import type {
 	InternalServerErrorContext as IInternalServerErrorContext,
 	NotFoundContext as INotFoundErrorContext,
 	ValidationErrorContext as IValidationErrorContext,
 } from 'src/errors/types';
+import type { QueryParams } from 'src/route/types';
 import { PulsarContext } from '.';
 
 export class InternalServerErrorContext<
 		TPath extends Path = '',
-		TQuery extends QuerySchema = {},
+		TQuery extends QueryParams = {},
 		TBody extends object = {},
 		TContext extends object = {},
 	>
@@ -28,7 +29,7 @@ export class InternalServerErrorContext<
 
 export class NotFoundErrorContext<
 		TPath extends Path = '',
-		TQuery extends QuerySchema = {},
+		TQuery extends QueryParams = {},
 		TBody extends object = {},
 		TContext extends object = {},
 	>
@@ -46,7 +47,7 @@ export class NotFoundErrorContext<
 
 export class ValidationErrorContext<
 		TPath extends Path = '',
-		TQuery extends QuerySchema = {},
+		TQuery extends QueryParams = {},
 		TBody extends object = {},
 		TContext extends object = {},
 	>
