@@ -1,4 +1,5 @@
 import type { Path } from 'src';
+import { Hono } from 'hono';
 import { $Pulsar } from './Pulsar';
 import { type RouteTree } from './Pulsar/types';
 import type { EmptyRoutes } from './types';
@@ -12,6 +13,6 @@ export class Pulsar<
 	TErr = {},
 > extends $Pulsar<TPath, TRoutes, TCtx, TErr> {
 	constructor() {
-		super({ baseUrl: '' as TPath });
+		super({ baseUrl: '' as TPath, hono: new Hono() });
 	}
 }

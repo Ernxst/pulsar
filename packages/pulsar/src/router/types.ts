@@ -192,11 +192,12 @@ export type Router<
 			TErrShape
 		>;
 
+		// TODO: Fix this - the new context should only be scoped to the TPath
 		/**
 		 * Specify middleware to run on all routes that match the given path.
 		 */
-		<TMiddleware extends Middleware<TContext, any>>(
-			path: Path,
+		<TPath extends Path, TMiddleware extends Middleware<TContext, any>>(
+			path: TPath,
 			middleware: TMiddleware
 		): Pulsar<
 			TGroup,

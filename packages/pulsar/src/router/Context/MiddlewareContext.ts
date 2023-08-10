@@ -1,7 +1,7 @@
 import type { MiddlewareContext as IMiddlewareContext } from 'src/middleware/types';
 import type { Path } from 'src/types/util';
 import type { QuerySchema, inferQuery } from '../types';
-import { Context } from '.';
+import { PulsarContext } from '.';
 
 export type AnyMiddlewareContext = MiddlewareContext<any>;
 
@@ -11,7 +11,7 @@ export class MiddlewareContext<
 		TBody extends object = {},
 		TContext extends object = {},
 	>
-	extends Context<TPath, inferQuery<TQuery>, TBody, TContext>
+	extends PulsarContext<TPath, inferQuery<TQuery>, TBody, TContext>
 	implements IMiddlewareContext<TContext>
 {
 	// This will be assigned in src/middleware/utils.ts

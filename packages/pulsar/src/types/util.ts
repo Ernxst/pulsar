@@ -4,7 +4,15 @@ import type { AnyRouter, ExtractRoutes } from '../router/types';
 /**
  * The runtime the router is running on
  */
-export type Runtime = 'workerd' | 'edge-light' | 'node' | 'lambda';
+export type Runtime =
+	| 'node'
+	| 'deno'
+	| 'bun'
+	| 'workerd'
+	| 'fastly'
+	| 'edge-light'
+	| 'lagon'
+	| 'other';
 
 export type HttpMethod =
 	| 'GET'

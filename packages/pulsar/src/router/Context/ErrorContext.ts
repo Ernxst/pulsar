@@ -4,7 +4,7 @@ import type {
 	NotFoundContext as INotFoundErrorContext,
 	ValidationErrorContext as IValidationErrorContext,
 } from 'src/errors/types';
-import { Context } from '.';
+import { PulsarContext } from '.';
 
 export class InternalServerErrorContext<
 		TPath extends Path = '',
@@ -12,14 +12,14 @@ export class InternalServerErrorContext<
 		TBody extends object = {},
 		TContext extends object = {},
 	>
-	extends Context<TPath, TQuery, TBody, TContext>
+	extends PulsarContext<TPath, TQuery, TBody, TContext>
 	implements IInternalServerErrorContext<TContext>
 {
 	public readonly code = 'INTERNAL_SERVER_ERROR';
 
 	constructor(
 		public readonly error: Error,
-		ctx: Context<TPath, TQuery, TBody, TContext>
+		ctx: PulsarContext<TPath, TQuery, TBody, TContext>
 	) {
 		super(ctx.config);
 		this.fromContext(ctx);
@@ -32,12 +32,12 @@ export class NotFoundErrorContext<
 		TBody extends object = {},
 		TContext extends object = {},
 	>
-	extends Context<TPath, TQuery, TBody, TContext>
+	extends PulsarContext<TPath, TQuery, TBody, TContext>
 	implements INotFoundErrorContext<TContext>
 {
 	public readonly code = 'NOT_FOUND';
 
-	constructor(ctx: Context<TPath, TQuery, TBody, TContext>) {
+	constructor(ctx: PulsarContext<TPath, TQuery, TBody, TContext>) {
 		const pathname = new URL(ctx.request.url).pathname as TPath;
 		super({ ...ctx.config, path: pathname });
 		this.fromContext(ctx);
@@ -50,7 +50,7 @@ export class ValidationErrorContext<
 		TBody extends object = {},
 		TContext extends object = {},
 	>
-	extends Context<TPath, TQuery, TBody, TContext>
+	extends PulsarContext<TPath, TQuery, TBody, TContext>
 	implements IValidationErrorContext<TContext>
 {
 	public readonly code = 'VALIDATION';
@@ -58,7 +58,7 @@ export class ValidationErrorContext<
 	constructor(
 		public readonly error: ValidationError,
 		public readonly input: unknown,
-		ctx: Context<TPath, TQuery, TBody, TContext>
+		ctx: PulsarContext<TPath, TQuery, TBody, TContext>
 	) {
 		super(ctx.config);
 		this.fromContext(ctx);

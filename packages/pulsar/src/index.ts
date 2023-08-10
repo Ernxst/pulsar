@@ -10,7 +10,6 @@ export { middleware } from './middleware';
 export type {
 	Middleware,
 	MiddlewareContext,
-	MiddlewareResult,
 	NextFunction,
 	inferMiddlewareInput,
 	inferMiddlewareOutput,

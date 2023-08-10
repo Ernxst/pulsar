@@ -19,50 +19,41 @@ describe('middleware', () => {
 			middleware1 = vi
 				.fn<MiddlewareArgs, MiddlewareReturn>()
 				.mockName('middleware1')
-				.mockImplementation(({ locals, next }) => {
-					expect(locals).toEqual({});
-					return next({ version: 1 });
+				.mockImplementation(async ({ next, locals }) => {
+					console.log('middleware1 locals', locals);
+					await next();
+					return { version: 1 };
 				});
 
 			middleware2 = vi
 				.fn<MiddlewareArgs, MiddlewareReturn>()
 				.mockName('middleware2')
-				.mockImplementation(async ({ locals, next }) => {
-					expect(locals).toEqual({ version: 1 });
-					const result = await next();
-					expect(result).toEqual(
-						expect.objectContaining({ data: { message: 'OK' }, ok: true })
-					);
-					return result;
+				.mockImplementation(async ({ next, locals }) => {
+					console.log('middleware2 locals', locals);
+					await next();
 				});
 
 			middleware3 = vi
 				.fn<MiddlewareArgs, MiddlewareReturn>()
 				.mockName('middleware3')
-				.mockImplementation(async ({ locals, next }) => {
-					expect(locals).toEqual({ version: 1 });
-					return next({ platform: 'web' });
+				.mockImplementation(async ({ next, locals }) => {
+					console.log('middleware3 locals', locals);
+					await next();
+					return { platform: 'web' };
 				});
 
 			middleware4 = vi
 				.fn<MiddlewareArgs, MiddlewareReturn>()
 				.mockName('middleware4')
-				.mockImplementation(async ({ locals, next }) => {
-					expect(locals).toEqual({ version: 1, platform: 'web' });
-					const result = await next();
-					expect(result).toEqual(
-						expect.objectContaining({ data: { message: 'OK' }, ok: true })
-					);
-					return result;
+				.mockImplementation(async ({ next, locals }) => {
+					console.log('middleware4 locals', locals);
+					await next();
 				});
 
 			handler = vi
 				.fn<HandlerArgs, HandlerReturn>()
 				.mockName('handler')
-				.mockImplementation(({ locals }) => {
-					expect(locals).toEqual({ version: 1, platform: 'web' });
-					return { message: 'OK' };
-				});
+				.mockImplementation(() => ({ message: 'OK' }));
 
 			router = new Pulsar()
 				.use(middleware1)
@@ -75,11 +66,45 @@ describe('middleware', () => {
 		});
 
 		test('should resolve next() after all other middleware handlers', () => {
+			console.log(middleware1.mock.calls[0][0].locals);
+			console.log(middleware2.mock.calls[0][0].locals);
+			console.log(middleware3.mock.calls[0][0].locals);
+			console.log(middleware4.mock.calls[0][0].locals);
 			expect(middleware1).toHaveBeenCalledOnce();
+			expect(middleware1).toHaveBeenCalledWith(
+				expect.objectContaining({ locals: {}, next: expect.any(Function) })
+			);
+
 			expect(middleware2).toHaveBeenCalledOnce();
+			expect(middleware2).toHaveBeenCalledWith(
+				expect.objectContaining({
+					locals: { version: 1 },
+					next: expect.any(Function),
+				})
+			);
+
 			expect(middleware3).toHaveBeenCalledOnce();
+			expect(middleware3).toHaveBeenCalledWith(
+				expect.objectContaining({
+					locals: { version: 1 },
+					next: expect.any(Function),
+				})
+			);
+
 			expect(middleware4).toHaveBeenCalledOnce();
+			expect(middleware4).toHaveBeenCalledWith(
+				expect.objectContaining({
+					locals: { version: 1, platform: 'web' },
+					next: expect.any(Function),
+				})
+			);
+
 			expect(handler).toHaveBeenCalledOnce();
+			expect(handler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					locals: { version: 1, platform: 'web' },
+				})
+			);
 		});
 	});
 });

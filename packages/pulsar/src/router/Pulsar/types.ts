@@ -1,4 +1,5 @@
 import type { HttpMethod, Path, Pulsar, Route } from 'src';
+import type { Hono } from 'hono';
 import type { RouteResult } from '../Context';
 
 export type MultiRoutes = Record<HttpMethod, Route<any, any, any, any, any>>;
@@ -14,7 +15,7 @@ export interface Options<
 	baseUrl: TPath;
 	errorHandler?: Parameters<Pulsar<TPath, TRoutes, TCtx, TErr>['onError']>[0];
 	parentConfig?: Options<any, any, any, any>;
-	parent?: Pulsar<any, any, any, any>;
+	hono: Hono<any, any, any>;
 }
 
 export type RouteHandler = (

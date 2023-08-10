@@ -1,15 +1,7 @@
-import { getQueryParams } from 'hono/utils/url';
 import { cacheHeader } from 'pretty-cache-header';
-import type {
-	Path,
-	QuerySchema,
-	RouteContext,
-	Runtime,
-	inferPathParams,
-} from 'src';
+import type { Path, RouteContext, Runtime, inferPathParams } from 'src';
+import type { QueryParams } from 'src/route/types';
 import { inferContentType } from 'src/utils/contentType';
-import { z } from 'zod';
-import type { inferQuery } from '../types';
 
 export interface RouteResult<TPayload extends object = any> {
 	status: number;
@@ -18,28 +10,29 @@ export interface RouteResult<TPayload extends object = any> {
 	payload: TPayload;
 }
 
-interface ContextOptions<TPath extends Path, TQuery extends QuerySchema> {
+interface ContextOptions<TPath extends Path, TQuery extends QueryParams> {
 	request: Request;
 	path: TPath;
 	params: inferPathParams<TPath>;
 	runtime: Runtime;
-	query?: TQuery;
+	query: TQuery;
+	body: any;
 }
 
-export type AnyContext = Context<any, any, any, any>;
+export type AnyContext = PulsarContext<any, any, any, any>;
 
-export class Context<
+export class PulsarContext<
 	TPath extends Path = '',
-	TQuery extends QuerySchema = {},
+	TQuery extends QueryParams = {},
 	TBody extends object = {},
 	TContext extends object = {},
-	TRouteCtx extends RouteContext<
+	TRouteCtx extends RouteContext<TPath, TQuery, TBody, TContext> = RouteContext<
 		TPath,
-		inferQuery<TQuery>,
+		TQuery,
 		TBody,
 		TContext
-	> = RouteContext<TPath, inferQuery<TQuery>, TBody, TContext>,
-> implements RouteContext<TPath, inferQuery<TQuery>, TBody, TContext>
+	>,
+> implements RouteContext<TPath, TQuery, TBody, TContext>
 {
 	readonly #response: RouteResult;
 
@@ -48,7 +41,7 @@ export class Context<
 	public readonly path: TPath;
 	public readonly params: inferPathParams<TPath>;
 	public readonly runtime: Runtime;
-	public readonly query: inferQuery<TQuery>;
+	public query: TQuery;
 	public body: TBody;
 
 	constructor(public readonly config: ContextOptions<TPath, TQuery>) {
@@ -66,10 +59,8 @@ export class Context<
 		this.path = config.path;
 		this.params = config.params;
 		this.runtime = config.runtime;
-
-		const queryParams = getQueryParams(this.request.url);
-		const schema = config.query ? z.object(config.query) : undefined;
-		this.query = schema ? schema.parse(queryParams) : (queryParams as any);
+		this.query = config.query;
+		this.body = config.body;
 	}
 
 	/**
@@ -84,7 +75,7 @@ export class Context<
 
 		this.headers(headers);
 		this.status(status, statusText);
-		this.setRequestBody(from.body);
+		this.body = from.body;
 		this.addLocals(from.locals);
 		if (payload) this.setResponseBody(payload);
 	}
@@ -110,10 +101,6 @@ export class Context<
 
 	public addLocals<TNewLocals extends object>(locals: TNewLocals) {
 		Object.assign(this.locals, locals);
-	}
-
-	public setRequestBody(body: TBody) {
-		this.body = body;
 	}
 
 	public setResponseBody<TNewBody>(body: TNewBody) {

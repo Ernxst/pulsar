@@ -5,51 +5,25 @@ export type inferMiddlewareInput<TMiddleware extends Middleware<any, any>> =
 	TMiddleware extends Middleware<infer TContext, any> ? TContext : never;
 
 export type inferMiddlewareOutput<TMiddleware extends Middleware<any, any>> =
-	TMiddleware extends (
-		...args: infer _
-	) => Promise<MiddlewareResult<infer TContext>>
+	TMiddleware extends (...args: infer _) => Promise<infer TContext>
 		? TContext
 		: TMiddleware extends Middleware<any, infer TContext>
 		? TContext
 		: never;
 
-export interface NextFunction<TNewContext extends object = {}> {
-	/**
-	 * Call the request's handler and obtain the result
-	 *
-	 * You must return the result of this function from your middleware handler.
-	 */
-	(): Promise<MiddlewareResult<{}>>;
-	/**
-	 * Call the request's handler and obtain the result.
-	 *
-	 * As the parameter to `context`, it is possible to only pass in new parameters
-	 * and properties that have changed, instead of repeating the entire
-	 * context object.
-	 *
-	 * You must return the result of this function from your middleware handler.
-	 */
-	<const TCtx extends TNewContext>(
-		context: TCtx
-	): Promise<MiddlewareResult<TCtx>>;
+export interface NextFunction {
+	(): Promise<void>;
 }
-
-export type MiddlewareResult<
-	_PlaceholderForUpdatedContext extends object = {},
-> = { ok: true; data: unknown } | { ok: false; error: unknown };
 
 /**
  * The context object passed to middleware handlers.
  */
-export interface MiddlewareContext<
-	TLocals extends object = {},
-	TNewContext extends object = {},
-> extends RouteContext<Path, QueryParams, object, TLocals> {
+export interface MiddlewareContext<TLocals extends object = {}>
+	extends RouteContext<Path, QueryParams, object, TLocals> {
 	/**
 	 * Call the request's handler and obtain the result.
-	 * You must return the result of this function from your middleware handler.
 	 */
-	next: NextFunction<TNewContext>;
+	next: NextFunction;
 }
 
 /**
@@ -68,9 +42,8 @@ export type Middleware<
 	 * @param context A clone of the context object. Modifying this object has
 	 * no effect.
 	 */
-	(
-		context: MiddlewareContext<TLocals>
-	) => Promise<MiddlewareResult<TNewContext>>;
+	| ((context: MiddlewareContext<TLocals>) => Promise<TNewContext>)
+	| ((context: MiddlewareContext<TLocals>) => Promise<void>);
 
 /**
  * Middleware builder is used to build middleware pipelines.
