@@ -1,3 +1,4 @@
+import type { Promisable } from 'type-fest';
 import type { QueryParams, RouteContext } from '../route/types';
 import type { Path } from '../types/util';
 
@@ -5,7 +6,7 @@ export type inferMiddlewareInput<TMiddleware extends Middleware<any, any>> =
 	TMiddleware extends Middleware<infer TContext, any> ? TContext : never;
 
 export type inferMiddlewareOutput<TMiddleware extends Middleware<any, any>> =
-	TMiddleware extends (...args: infer _) => Promise<infer TContext>
+	TMiddleware extends (...args: infer _) => Promisable<infer TContext>
 		? TContext
 		: TMiddleware extends Middleware<any, infer TContext>
 		? TContext
@@ -42,8 +43,8 @@ export type Middleware<
 	 * @param context A clone of the context object. Modifying this object has
 	 * no effect.
 	 */
-	| ((context: MiddlewareContext<TLocals>) => Promise<TNewContext>)
-	| ((context: MiddlewareContext<TLocals>) => Promise<void>);
+	| ((context: MiddlewareContext<TLocals>) => Promisable<TNewContext>)
+	| ((context: MiddlewareContext<TLocals>) => Promisable<void>);
 
 /**
  * Middleware builder is used to build middleware pipelines.
