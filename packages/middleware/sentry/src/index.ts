@@ -16,10 +16,12 @@ class MockContext implements ExecutionContext {
  * internal server errors to Sentry.
  */
 export function sentry(opts: Options, callback?: (sentry: Toucan) => void) {
-	return middleware().define(({ request, next }) => {
+	return middleware().define(async ({ request, next }) => {
 		const sentry = new Toucan({ request, context: new MockContext(), ...opts });
 
 		if (callback) callback(sentry);
-		return next({ sentry });
+
+		await next();
+		return { sentry };
 	});
 }
