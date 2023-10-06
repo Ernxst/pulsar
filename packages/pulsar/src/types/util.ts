@@ -1,18 +1,11 @@
 import type { Pulsar } from 'src';
+import type { getRuntimeKey } from 'hono/adapter';
 import type { AnyRouter, ExtractRoutes } from '../router/types';
 
 /**
  * The runtime the router is running on
  */
-export type Runtime =
-	| 'node'
-	| 'deno'
-	| 'bun'
-	| 'workerd'
-	| 'fastly'
-	| 'edge-light'
-	| 'lagon'
-	| 'other';
+export type Runtime = ReturnType<typeof getRuntimeKey>;
 
 export type HttpMethod =
 	| 'GET'
@@ -22,8 +15,6 @@ export type HttpMethod =
 	| 'DELETE'
 	| 'OPTIONS'
 	| 'ALL';
-
-export type Promisable<T> = T | Promise<T>;
 
 /**
  * A path, starting with a slash, or the empty string.
