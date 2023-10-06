@@ -1,12 +1,6 @@
 import type { cacheHeader } from 'pretty-cache-header';
-import type { Writable } from 'type-fest';
-import type {
-	HttpMethod,
-	Path,
-	Promisable,
-	Runtime,
-	inferPathParams,
-} from '../types/util';
+import type { Promisable, Writable } from 'type-fest';
+import type { HttpMethod, Path, Runtime, inferPathParams } from '../types/util';
 
 export type RedirectStatus = 301 | 302 | 303 | 307 | 308;
 

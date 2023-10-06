@@ -1,5 +1,6 @@
+import type { Promisable } from 'type-fest';
 import type { QueryParams, RouteContext } from '../route/types';
-import type { Path, Promisable } from '../types/util';
+import type { Path } from '../types/util';
 import type { ValidationError } from '.';
 
 export interface ErrorHandler<

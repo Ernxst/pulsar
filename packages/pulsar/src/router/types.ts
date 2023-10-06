@@ -1,8 +1,9 @@
 import type { ZodObject, ZodType, z } from 'zod';
+import type { Promisable } from 'type-fest';
 import type { ErrorHandler } from '../errors/types';
 import type { Middleware, inferMiddlewareOutput } from '../middleware/types';
 import type { Route, RouteContext } from '../route/types';
-import type { HttpMethod, Path, Promisable } from '../types/util';
+import type { HttpMethod, Path } from '../types/util';
 import type { RouteTree } from './Pulsar/types';
 import type { Pulsar } from '.';
 
